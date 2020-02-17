@@ -2,22 +2,17 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "0.1.0",
-    "command": "gulp",
+    "command": "npm",
     "isShellCommand": true,
     "args": [
-        "--no-color"
+        "run"
     ],
     "tasks": [
         {
-            "taskName": "build",
-            "args": [],
-            "isBuildCommand": true,
-            "isBackground": false,
-            "problemMatcher": [
-                "$lessCompile",
-                "$tsc",
-                "$jshint"
-            ]
+            "taskName": "start",
+            "args": ["start"],
+            "isBackground": true
+
         },
         {
             "taskName": "test",
@@ -25,8 +20,8 @@
             "isTestCommand": true
         },
         {
-            "taskName": "build-watch",
-            "isBackground": true
+            "taskName": "build",
+            "isBuildCommand": true
         }
     ]
 }

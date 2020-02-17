@@ -1,0 +1,23 @@
+Custom webgl: 
+
+Scene/EllipsoidPrimitive.js
+
+postprocess£º
+
+Scene -> PostProcessStage #define each stage
+      
+      -> PostProcessComposite #define composite 
+
+      -> PostProcessStageCollection #create post-process stage instaces
+
+      -> PostProcessStageLibrary #functions creating common post-process stages
+
+renderer:
+
+Renderer -> ShaderProgram
+
+	 -> ShaderSource #shader string utils
+	
+	 -> Texture
+	
+	 -> DrawCommand #a command to the renderer for drawing
