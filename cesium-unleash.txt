@@ -1,4 +1,4 @@
-Custom webgl: 
+Custom webgl sample: 
 
 Scene/EllipsoidPrimitive.js
 
@@ -12,6 +12,8 @@ Scene -> PostProcessStage #define each stage
 
       -> PostProcessStageLibrary #functions creating common post-process stages
 
+shaders -> Shaders/PostProcessStages
+
 renderer:
 
 Renderer -> ShaderProgram
@@ -21,3 +23,23 @@ Renderer -> ShaderProgram
 	 -> Texture
 	
 	 -> DrawCommand #a command to the renderer for drawing
+	
+	 -> FrameBuffer 
+
+	 -> createUniforms
+	
+	 -> Context #actual draw pipeline with bind vao & setUniforms & draw arrays or elements, also has extensions
+
+Scene -> Camera
+      
+      -> View # updateFrustums, has camera
+
+      -> SkyBox
+
+      -> Scene # has sun, skybox etc
+
+      -> Cesium3DTileset #3d tile Object
+
+      -> Cesium3DTile #A tile in a Cesium3DTileset
+
+Color -> Cesium3DTileStyle #various color expression evaluates

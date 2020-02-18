@@ -9,6 +9,7 @@ import AmbientOcclusionGenerate from '../Shaders/PostProcessStages/AmbientOcclus
 import AmbientOcclusionModulate from '../Shaders/PostProcessStages/AmbientOcclusionModulate.js';
 import BlackAndWhite from '../Shaders/PostProcessStages/BlackAndWhite.js';
 import BloomComposite from '../Shaders/PostProcessStages/BloomComposite.js';
+import BloomThreshold from '../Shaders/PostProcessStages/BloomThreshold.js'
 import Brightness from '../Shaders/PostProcessStages/Brightness.js';
 import ContrastBias from '../Shaders/PostProcessStages/ContrastBias.js';
 import DepthOfField from '../Shaders/PostProcessStages/DepthOfField.js';
@@ -363,7 +364,80 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
     PostProcessStageLibrary.isSilhouetteSupported = function(scene) {
         return scene.context.depthTexture;
     };
+    PostProcessStageLibrary.partialBloomStage = function() {
+        var threshold = new PostProcessStage({
+            name : 'bloom_threshold',
+            fragmentShader : BloomThreshold,
+            uniforms : {
+                threshold: '1.'
+            }
+        });
+        var blur = createBlur('czm_partial_bloom_blur');
+        var generateComposite = new PostProcessStageComposite({
+            name : 'czm_bloom_threshold_blur',
+            stages : [threshold, blur]
+        });
 
+        var bloomComposite = new PostProcessStage({
+            name : 'czm_partial_bloom_generate_composite',
+            fragmentShader : BloomComposite,
+            uniforms : {
+                glowOnly : false,
+                bloomTexture : generateComposite.name
+            }
+        });
+
+        var uniforms = {};
+        defineProperties(uniforms, {
+            glowOnly : {
+                get : function() {
+                    return bloomComposite.uniforms.glowOnly;
+                },
+                set : function(value) {
+                    bloomComposite.uniforms.glowOnly = value;
+                }
+            },
+            threshold : {
+                get : function() {
+                    return threshold.uniforms.threshold;
+                },
+                set : function(value) {
+                    threshold.uniforms.threshold = value;
+                }
+            },
+            delta : {
+                get : function() {
+                    return blur.uniforms.delta;
+                },
+                set : function(value) {
+                    blur.uniforms.delta = value;
+                }
+            },
+            sigma : {
+                get : function() {
+                    return blur.uniforms.sigma;
+                },
+                set : function(value) {
+                    blur.uniforms.sigma = value;
+                }
+            },
+            stepSize : {
+                get : function() {
+                    return blur.uniforms.stepSize;
+                },
+                set : function(value) {
+                    blur.uniforms.stepSize = value;
+                }
+            }
+        });
+
+        return new PostProcessStageComposite({
+            name : 'partial_bloom',
+            stages : [generateComposite, bloomComposite],
+            inputPreviousStageTexture : false,
+            uniforms : uniforms
+        });
+    };
     /**
      * Creates a post-process stage that applies a bloom effect to the input texture.
      * <p>

@@ -17,7 +17,34 @@
 </style>
 <div id="cesiumContainer" class="fullSize"></div>
 <div id="loadingOverlay"><h1>Loading...</h1></div>
-<div id="toolbar"></div>
+<div id="toolbar">
+    <table><tbody>
+        <tr>
+            <td>Bloom</td>
+            <td><input type="checkbox" data-bind="checked: show"></td>
+        </tr>
+        <tr>
+            <td>Glow only</td>
+            <td><input type="checkbox" data-bind="checked: glowOnly"></td>
+        </tr>
+        <tr>
+            <td>Threshold</td>
+            <td><input type="range" min="0.0" max="1.0" step="0.01" data-bind="value: threshold, valueUpdate: 'input'"></td>
+        </tr>
+        <tr>
+            <td>Delta</td>
+            <td><input type="range" min="1" max="5" step="0.01" data-bind="value: delta, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Sigma</td>
+            <td><input type="range" min="1" max="10" step="0.01" data-bind="value: sigma, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Step Size</td>
+            <td><input type="range" min="0" max="7" step="0.01" data-bind="value: stepSize, valueUpdate: 'input'"/></td>
+        </tr>
+    </tbody></table>
+</div>
 <script id="cesium_sandcastle_script">
 function startup(Cesium) {
     'use strict';
@@ -41,7 +68,7 @@ var classificationTileset = new Cesium.Cesium3DTileset({
     classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
 });
 classificationTileset.style = new Cesium.Cesium3DTileStyle({
-    color: 'rgba(255, 0, 0, 0.5)'
+    color: 'rgba(2555, 255, 255, 0.5)'
 });
 viewer.scene.primitives.add(classificationTileset);
 
@@ -59,6 +86,36 @@ Sandcastle.addToggleButton('Show classification', true, function(checked) {
     classificationTileset.show = checked;
     nonClassificationTileset.show = !checked;
 });
+var viewModel = {
+    show : true,
+    glowOnly : false,
+    threshold : 0.9,
+    delta : 1.0,
+    sigma : 3.78,
+    stepSize : 5.0
+};
+
+Cesium.knockout.track(viewModel);
+var toolbar = document.getElementById('toolbar');
+Cesium.knockout.applyBindings(viewModel, toolbar);
+for (var name in viewModel) {
+    if (viewModel.hasOwnProperty(name)) {
+        Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
+    }
+}
+
+var stages = viewer.scene.postProcessStages;
+var partialBloom = stages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
+
+function updatePostProcess() {
+    partialBloom.enabled = Boolean(viewModel.show);
+    partialBloom.uniforms.glowOnly = Boolean(viewModel.glowOnly);
+    partialBloom.uniforms.threshold = Number(viewModel.threshold);
+    partialBloom.uniforms.delta = Number(viewModel.delta);
+    partialBloom.uniforms.sigma = Number(viewModel.sigma);
+    partialBloom.uniforms.stepSize = Number(viewModel.stepSize);
+}
+updatePostProcess();
 //Sandcastle_End
 Sandcastle.finishedLoading();
 }
