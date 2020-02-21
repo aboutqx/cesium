@@ -72,6 +72,6 @@ Core -> Color #color manuplation, color constants£¬rgb£¬rgba£¬hsl color to vec4 
 
 Scene -> BatchTable #store each primitive's pick color in the creating texture.
 
-webgl2£º
+webgl2:
 
 Scene -> modernizeShader #change to opengl es 3.0 glsl.
