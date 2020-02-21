@@ -17,7 +17,34 @@
 </style>
 <div id="cesiumContainer" class="fullSize"></div>
 <div id="loadingOverlay"><h1>Loading...</h1></div>
-<div id="toolbar"></div>
+<div id="toolbar">
+    <table><tbody>
+        <tr>
+            <td>Bloom</td>
+            <td><input type="checkbox" data-bind="checked: show"></td>
+        </tr>
+        <tr>
+            <td>Glow only</td>
+            <td><input type="checkbox" data-bind="checked: glowOnly"></td>
+        </tr>
+        <tr>
+            <td>Threshold</td>
+            <td><input type="range" min="0.0" max="1.0" step="0.01" data-bind="value: threshold, valueUpdate: 'input'"></td>
+        </tr>
+        <tr>
+            <td>Delta</td>
+            <td><input type="range" min="1" max="5" step="0.01" data-bind="value: delta, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Sigma</td>
+            <td><input type="range" min="1" max="10" step="0.01" data-bind="value: sigma, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Step Size</td>
+            <td><input type="range" min="0" max="7" step="0.01" data-bind="value: stepSize, valueUpdate: 'input'"/></td>
+        </tr>
+    </tbody></table>
+</div>
 <script id="cesium_sandcastle_script">
 function startup(Cesium) {
     'use strict';
@@ -49,9 +76,9 @@ function colorByHeight() {
     tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
             conditions: [
-                ['${height} >= 300', 'rgba(45, 0, 75, 0.5)'],
-                ['${height} >= 200', 'rgb(102, 71, 151)'],
-                ['${height} >= 100', 'rgb(170, 162, 204)'],
+                ['${height} >= 300', 'rgba(450, 0, 75, 0.5)'],
+                ['${height} >= 200', 'hsla(.6, .2,2,.4999)'],
+                ['${height} >= 100', 'rgba(1700, 1620, 2040,1.)'],
                 ['${height} >= 50', 'rgb(224, 226, 238)'],
                 ['${height} >= 25', 'rgb(252, 230, 200)'],
                 ['${height} >= 10', 'rgb(248, 176, 87)'],
@@ -143,6 +170,36 @@ Sandcastle.addToolbarMenu([{
 
 colorByHeight();
 
+var viewModel = {
+    show : true,
+    glowOnly : false,
+    threshold : 1.,
+    delta : 1.0,
+    sigma : 3.78,
+    stepSize : 5.0
+};
+
+Cesium.knockout.track(viewModel);
+var toolbar = document.getElementById('toolbar');
+Cesium.knockout.applyBindings(viewModel, toolbar);
+for (var name in viewModel) {
+    if (viewModel.hasOwnProperty(name)) {
+        Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
+    }
+}
+
+var stages = viewer.scene.postProcessStages;
+var partialBloom = stages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
+
+function updatePostProcess() {
+    partialBloom.enabled = Boolean(viewModel.show);
+    partialBloom.uniforms.glowOnly = Boolean(viewModel.glowOnly);
+    partialBloom.uniforms.threshold = Number(viewModel.threshold);
+    partialBloom.uniforms.delta = Number(viewModel.delta);
+    partialBloom.uniforms.sigma = Number(viewModel.sigma);
+    partialBloom.uniforms.stepSize = Number(viewModel.stepSize);
+}
+updatePostProcess();
 //Sandcastle_End
 Sandcastle.finishedLoading();
 }

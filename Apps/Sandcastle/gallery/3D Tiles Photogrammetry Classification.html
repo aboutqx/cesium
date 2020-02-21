@@ -68,7 +68,7 @@ var classificationTileset = new Cesium.Cesium3DTileset({
     classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
 });
 classificationTileset.style = new Cesium.Cesium3DTileStyle({
-    color: 'rgba(2555, 255, 255, 0.5)'
+    color: 'hsla(.1, .2,2,.4999)'
 });
 viewer.scene.primitives.add(classificationTileset);
 
@@ -78,7 +78,7 @@ var nonClassificationTileset = new Cesium.Cesium3DTileset({
     show: false
 });
 nonClassificationTileset.style = new Cesium.Cesium3DTileStyle({
-    color: 'rgba(255, 0, 0, 0.5)'
+    color: 'hsla(.1, .2,2,.4999)'
 });
 viewer.scene.primitives.add(nonClassificationTileset);
 
@@ -89,9 +89,9 @@ Sandcastle.addToggleButton('Show classification', true, function(checked) {
 var viewModel = {
     show : true,
     glowOnly : false,
-    threshold : 0.9,
+    threshold : 1.,
     delta : 1.0,
-    sigma : 3.78,
+    sigma : 4.78,
     stepSize : 5.0
 };
 
