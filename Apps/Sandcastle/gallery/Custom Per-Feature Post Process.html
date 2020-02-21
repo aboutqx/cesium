@@ -38,27 +38,41 @@ var entity = viewer.trackedEntity = viewer.entities.add({
 });
 
 // Shade selected model with highlight.
-var fragmentShaderSource =
-    'uniform sampler2D colorTexture;\n' +
-    'varying vec2 v_textureCoordinates;\n' +
-    'uniform vec4 highlight;\n' +
-    'void main() {\n' +
-    '    vec4 color = texture2D(colorTexture, v_textureCoordinates);\n' +
-    '    if (czm_selected()) {\n' +
-    '        vec3 highlighted = highlight.a * highlight.rgb + (1.0 - highlight.a) * color.rgb;\n' +
-    '        gl_FragColor = vec4(highlighted, 1.0);\n' +
-    '    } else { \n' +
-    '        gl_FragColor = color;\n' +
-    '    }\n' +
- '}\n';
-var stage = scene.postProcessStages.add(new Cesium.PostProcessStage({
-    fragmentShader : fragmentShaderSource,
-    uniforms : {
-        highlight : function() {
-            return new Cesium.Color(1.0, 0.0, 0.0, 0.5);
-        }
-    }
-}));
+// var fragmentShaderSource =
+//     'uniform sampler2D colorTexture;\n' +
+//     'varying vec2 v_textureCoordinates;\n' +
+//     'uniform vec4 highlight;\n' +
+//     'void main() {\n' +
+//     '    vec4 color = texture2D(colorTexture, v_textureCoordinates);\n' +
+//     '    if (czm_selected()) {\n' +
+//     '        vec3 highlighted = highlight.a * highlight.rgb + (1.0 - highlight.a) * color.rgb;\n' +
+//     '        gl_FragColor = vec4(highlighted, 1.0);\n' +
+//     '    } else { \n' +
+//     '        gl_FragColor = color;\n' +
+//     '    }\n' +
+//  '}\n';
+// var stage = scene.postProcessStages.add(new Cesium.PostProcessStage({
+//     fragmentShader : fragmentShaderSource,
+//     uniforms : {
+//         highlight : function() {
+//             return new Cesium.Color(.0, 0.5, 0.0, 0.5);
+//         }
+//     }
+// }));
+
+var stages = viewer.scene.postProcessStages;
+var partialBloom = stages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
+
+function updatePostProcess() {
+    partialBloom.enabled = true;
+    partialBloom.uniforms.glowOnly = false;
+    partialBloom.uniforms.threshold = .3;
+    partialBloom.uniforms.delta = 1.;
+    partialBloom.uniforms.sigma = 3.78;
+    partialBloom.uniforms.stepSize = 3.78;
+}
+updatePostProcess();
+var stage = partialBloom
 stage.selected = [];
 
 var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);

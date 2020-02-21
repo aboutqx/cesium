@@ -1,10 +1,14 @@
 Render pipeline:
 
-https://cesium.com/blog/2015/05/14/graphics-tech-in-cesium/
+https://github.com/CesiumGS/cesium/wiki/Data-Driven-Renderer-Details
 
 Custom webgl sample: 
 
 Scene/EllipsoidPrimitive.js
+
+FrameBuffer and Compute Tetxure Example:
+
+Renderer -> checkFloatTexturePrecision
 
 postprocess£º
 
@@ -35,6 +39,8 @@ Renderer -> ShaderProgram
 	 -> UniformState #uniform values
 	
 	 -> Context #actual draw pipeline with bind vao & setUniforms & draw arrays or elements, also has extensions
+	
+	           -> bindFramebuffer
 
 	 -> ComputeCommand #compute shader
 
@@ -44,7 +50,9 @@ Scene -> Camera
 
       -> SkyBox
 
-      -> Scene # has sun, skybox etc, render function
+      -> Scene # has sun, skybox etc, render function.
+	
+	 -> updateAndRenderPrimitives #draw
 
       -> Cesium3DTileset #3d tile Object
 
@@ -59,6 +67,8 @@ dateBatchTexture -> Texture.copyFrom  #create colorTexture from data arrayBuffer
       -> SceneFrameBuffer #global framebuffer
 
       -> FrameState #State information about the current frame.  An instance of this class is provided to update functions.
+
+      -> Picking #select 3DTileSetFeature
 
 Just Debug It.See Call Stack.
 

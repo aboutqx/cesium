@@ -90,6 +90,7 @@ if (Cesium.PostProcessStageLibrary.isSilhouetteSupported(viewer.scene)) {
 
         // Pick a new feature
         var pickedFeature = viewer.scene.pick(movement.endPosition);
+        console.log(pickedFeature)
         if (!Cesium.defined(pickedFeature)) {
             nameOverlay.style.display = 'none';
             return;

@@ -8,12 +8,12 @@ void main(void)
 {
     vec4 color = texture2D(colorTexture, v_textureCoordinates);
 
-#ifdef CZM_SELECTED_FEATURE
-    if (czm_selected()) {
-        gl_FragColor = color;
-        return;
-    }
-#endif
+// #ifdef CZM_SELECTED_FEATURE
+//     if (czm_selected()) {
+//         gl_FragColor = vec4(.,0.3,0.3,1.);
+//         return;
+//     }
+// #endif
 
     vec4 bloom = texture2D(bloomTexture, v_textureCoordinates);
     vec3 result = glowOnly ? bloom.rgb : bloom.rgb + color.rgb;
