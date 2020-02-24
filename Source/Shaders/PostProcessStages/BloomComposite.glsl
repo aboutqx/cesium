@@ -10,7 +10,7 @@ void main(void)
 
 // #ifdef CZM_SELECTED_FEATURE
 //     if (czm_selected()) {
-//         gl_FragColor = vec4(.,0.3,0.3,1.);
+//         gl_FragColor = vec4(.3,0.3,0.3,1.);
 //         return;
 //     }
 // #endif

@@ -14,7 +14,9 @@ import ModelAnimationLoop from '../Scene/ModelAnimationLoop.js';
 import ShadowMode from '../Scene/ShadowMode.js';
 import BoundingSphereState from './BoundingSphereState.js';
 import Property from './Property.js';
+import Emitter from '../Core/Emitter.js';
 
+window.Emitter = Emitter
     var defaultScale = 1.0;
     var defaultMinimumPixelSize = 0.0;
     var defaultIncrementallyLoadTextures = true;
@@ -145,6 +147,8 @@ import Property from './Property.js';
             model.lightColor = Property.getValueOrUndefined(modelGraphics._lightColor, time);
 
             if (model.ready) {
+
+                Emitter.emit('modelReady', {id: model.id})
                 var runAnimations = Property.getValueOrDefault(modelGraphics._runAnimations, time, true);
                 if (modelData.animationsRunning !== runAnimations) {
                     if (runAnimations) {

@@ -741,6 +741,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         var length = features.length;
         for (i = 0; i < length; ++i) {
             feature = features[i];
+            if(!feature) return
             if (defined(feature.pickIds)) {
                 textureLength += feature.pickIds.length;
             } else if (defined(feature.pickId)) {

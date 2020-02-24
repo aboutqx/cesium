@@ -43,6 +43,10 @@
             <td>Step Size</td>
             <td><input type="range" min="0" max="7" step="0.01" data-bind="value: stepSize, valueUpdate: 'input'"/></td>
         </tr>
+        <tr>
+            <td>id</td>
+            <td><input type="range" min="0" max="206" step=".1" data-bind="value: id, valueUpdate: 'input'"/></td>
+        </tr>
     </tbody></table>
 </div>
 <script id="cesium_sandcastle_script">
@@ -55,22 +59,22 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
 });
 
 // A normal b3dm tileset of photogrammetry
-var tileset = new Cesium.Cesium3DTileset({
+var tileset0 = new Cesium.Cesium3DTileset({
     url: Cesium.IonResource.fromAssetId(40866)
 });
-viewer.scene.primitives.add(tileset);
-viewer.zoomTo(tileset);
+viewer.scene.primitives.add(tileset0);
+viewer.zoomTo(tileset0);
 
 var classifcationTilesetUrl = '../../SampleData/Cesium3DTiles/Classification/Photogrammetry/tileset.json';
 // A b3dm tileset used to classify the photogrammetry tileset
-var classificationTileset = new Cesium.Cesium3DTileset({
+var tileset = new Cesium.Cesium3DTileset({
     url: classifcationTilesetUrl,
     classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
 });
-classificationTileset.style = new Cesium.Cesium3DTileStyle({
+tileset.style = new Cesium.Cesium3DTileStyle({
     color: 'hsla(.1, .2,2,.4999)'
 });
-viewer.scene.primitives.add(classificationTileset);
+viewer.scene.primitives.add(tileset);
 
 // The same b3dm tileset used for classification, but rendered normally for comparison.
 var nonClassificationTileset = new Cesium.Cesium3DTileset({
@@ -83,7 +87,7 @@ nonClassificationTileset.style = new Cesium.Cesium3DTileStyle({
 viewer.scene.primitives.add(nonClassificationTileset);
 
 Sandcastle.addToggleButton('Show classification', true, function(checked) {
-    classificationTileset.show = checked;
+    tileset.show = checked;
     nonClassificationTileset.show = !checked;
 });
 var viewModel = {
@@ -92,7 +96,8 @@ var viewModel = {
     threshold : 1.,
     delta : 1.0,
     sigma : 4.78,
-    stepSize : 5.0
+    stepSize : 5.0,
+    id: 0
 };
 
 Cesium.knockout.track(viewModel);
@@ -116,6 +121,47 @@ function updatePostProcess() {
     partialBloom.uniforms.stepSize = Number(viewModel.stepSize);
 }
 updatePostProcess();
+
+partialBloom.selected = [];
+
+var contents = []
+var loaded = false
+var id = 0
+function getContents(root) {
+
+    if(root.content instanceof Cesium.Empty3DTileContent){
+        // do nothing
+    } else if(root.content){
+        contents.push(root.content)
+    }
+    //recurse
+    root.children.map(v => getContents(v))
+}
+
+viewer.scene.postRender.addEventListener(function (scene) {
+    if(tileset.tilesLoaded && !loaded){
+        getContents(tileset.root)
+        console.log(contents)
+        loaded = true
+    }
+    if(tileset.tilesLoaded && contents.length) {
+        id = Math.floor(viewModel.id)
+        partialBloom.selected = contents[id]._features
+    }
+
+});
+
+var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction(function(movement) {
+    var pickedObject = viewer.scene.pick(movement.endPosition);
+    if (Cesium.defined(pickedObject)) {
+        //partialBloom.selected = [pickedObject];
+        //console.log(pickedObject)
+    } else {
+        partialBloom.selected = [];
+    }
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
 //Sandcastle_End
 Sandcastle.finishedLoading();
 }

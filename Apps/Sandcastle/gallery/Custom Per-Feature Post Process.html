@@ -73,17 +73,34 @@ function updatePostProcess() {
 }
 updatePostProcess();
 var stage = partialBloom
-stage.selected = [];
 
-var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-handler.setInputAction(function(movement) {
-    var pickedObject = viewer.scene.pick(movement.endPosition);
-    if (Cesium.defined(pickedObject)) {
-        stage.selected = [pickedObject.primitive];
-    } else {
-        stage.selected = [];
-    }
-}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+Emitter.on('modelReady', function(){
+    stage.selected = [scene.primitives.get(1)]
+})
+
+// viewer.scene.postRender.addEventListener(function (scene) {
+//     if(tileset.ready){
+//         var boundingVolume = tileset.root.boundingVolume.boundingVolume;
+//         var selected = tileset.statistics.selected > 0;
+//         var newValue = selected && !boundingVolume.isOccluded(scene.frameState.occluder);
+
+//         if (visible !== newValue){
+//             visible = newValue;
+//             console.log('occluded: ' + !visible);
+//         }
+//     }
+// });
+
+
+// var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+// handler.setInputAction(function(movement) {
+//     var pickedObject = viewer.scene.pick(movement.endPosition);
+//     if (Cesium.defined(pickedObject)) {
+//         stage.selected = [pickedObject.primitive];
+//     } else {
+//         stage.selected = [];
+//     }
+// }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
 //Sandcastle_End
     Sandcastle.finishedLoading();

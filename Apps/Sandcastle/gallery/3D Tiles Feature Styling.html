@@ -43,6 +43,10 @@
             <td>Step Size</td>
             <td><input type="range" min="0" max="7" step="0.01" data-bind="value: stepSize, valueUpdate: 'input'"/></td>
         </tr>
+        <tr>
+            <td>id</td>
+            <td><input type="range" min="0" max="206" step=".03" data-bind="value: id, valueUpdate: 'input'" /></td>
+        </tr>
     </tbody></table>
 </div>
 <script id="cesium_sandcastle_script">
@@ -176,7 +180,8 @@ var viewModel = {
     threshold : 1.,
     delta : 1.0,
     sigma : 3.78,
-    stepSize : 5.0
+    stepSize : 5.0,
+    id: 0
 };
 
 Cesium.knockout.track(viewModel);
@@ -200,6 +205,44 @@ function updatePostProcess() {
     partialBloom.uniforms.stepSize = Number(viewModel.stepSize);
 }
 updatePostProcess();
+
+var contents = []
+var loaded = false
+function getContents(root) {
+
+    if(root.content instanceof Cesium.Empty3DTileContent){
+        // do nothing
+    } else if(root.content){
+        contents.push(root.content)
+    }
+    //recurse
+    root.children.map(v => getContents(v))
+}
+
+var lastTime = 0, curTime = 0, id = 180
+
+viewer.scene.postRender.addEventListener(function (scene) {
+    if(tileset.tilesLoaded && !loaded){
+        getContents(tileset.root)
+        console.log(contents)
+        loaded = true
+    }
+    if(tileset.tilesLoaded && contents) {
+        id = Math.floor(viewModel.id)
+        partialBloom.selected = contents[id]._features
+    }
+    curTime = performance.now()
+
+    if(curTime - lastTime > 500) {
+        //id++
+        lastTime = performance.now()
+    }
+    if(id >= contents.length) id = 180
+
+});
+
+
+
 //Sandcastle_End
 Sandcastle.finishedLoading();
 }

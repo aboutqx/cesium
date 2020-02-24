@@ -63,6 +63,8 @@ Scene -> Camera
       -> Cesium3DTileStyleEngine #apply style use Batched3DModel3DTileContent applyStyle -> Cesium3DTileBatchTable applyStyle£¬setColor -> up-
 
 dateBatchTexture -> Texture.copyFrom  #create colorTexture from data arrayBufferView use batchValues.setColor changes batchValues.
+
+      -> Cesium3DTileFeature #a feature of tileset
  
       -> SceneFrameBuffer #global framebuffer
 
@@ -85,3 +87,22 @@ Scene -> BatchTable #store each primitive's pick color in the creating texture.
 webgl2:
 
 Scene -> modernizeShader #change to opengl es 3.0 glsl.
+
+model:
+
+DataSource -> Entity #has ModelGraphics 
+
+Scene -> Model #gltf model, ready promise
+
+Scene -> PrimitiveCollection -> get(index) #get scene primitive
+
+DataSource -> ModelVisualizer #map Entity#ModelGraphics to a Model£¬ while only Model has the ready promise
+
+Scene -> Cesium3DTileset.root -> Cesium3DTile.content._batchTable -> Batched3DModel3DTileContent #getFeature(batchId) or _features  -> 
+
+Cesium3DTileFeature #pickId 
+	which is color
+
+	while batchId from Cesium3DTileBatchTable
+
+	#root may have Empty3DTileContent, selectedTiles always change with view.

@@ -12,8 +12,12 @@ void main(void)
     // else
     //     gl_FragColor = vec4(0., 0., 0., 1.);
     //gl_FragColor = vec4(rgb.g);
-
+#ifdef CZM_SELECTED_FEATURE
     if (czm_selected()) {
         gl_FragColor = vec4(rgb,1.);
-    } else gl_FragColor = vec4(0., 0., 0., 1.);
+        return;
+    }
+#endif
+
+    gl_FragColor = vec4(0., 0., 0., 1.);
 }
