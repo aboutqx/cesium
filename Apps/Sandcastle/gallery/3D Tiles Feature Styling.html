@@ -229,7 +229,7 @@ viewer.scene.postRender.addEventListener(function (scene) {
     }
     if(tileset.tilesLoaded && contents) {
         id = Math.floor(viewModel.id)
-        partialBloom.selected = contents[id]._features
+        partialBloom.selected = contents[id] ? contents[id]._features : []
     }
     curTime = performance.now()
 
@@ -240,8 +240,19 @@ viewer.scene.postRender.addEventListener(function (scene) {
     if(id >= contents.length) id = 180
 
 });
-
-
+// On mouse over, display all the properties for a feature in the console log.
+var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction(function(movement) {
+    var feature = viewer.scene.pick(movement.endPosition);
+    if (feature instanceof Cesium.Cesium3DTileFeature) {
+        var propertyNames = feature.getPropertyNames();
+        var length = propertyNames.length;
+        for (var i = 0; i < length; ++i) {
+            var propertyName = propertyNames[i];
+            console.log(propertyName + ': ' + feature.getProperty(propertyName));
+        }
+    }
+}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
 //Sandcastle_End
 Sandcastle.finishedLoading();
