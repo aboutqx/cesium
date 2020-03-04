@@ -2,7 +2,6 @@ import buildModuleUrl from '../Core/buildModuleUrl.js';
 import Color from '../Core/Color.js';
 import createGuid from '../Core/createGuid.js';
 import defined from '../Core/defined.js';
-import defineProperties from '../Core/defineProperties.js';
 import Ellipsoid from '../Core/Ellipsoid.js';
 import AcesTonemapping from '../Shaders/PostProcessStages/AcesTonemappingStage.js';
 import AmbientOcclusionGenerate from '../Shaders/PostProcessStages/AmbientOcclusionGenerate.js';
@@ -66,7 +65,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         });
 
         var uniforms = {};
-        defineProperties(uniforms, {
+        Object.defineProperties(uniforms, {
             delta : {
                 get : function() {
                     return blurX.uniforms.delta;
@@ -151,7 +150,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         });
 
         var uniforms = {};
-        defineProperties(uniforms, {
+        Object.defineProperties(uniforms, {
             focalDistance : {
                 get : function() {
                     return dof.uniforms.focalDistance;
@@ -486,7 +485,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         });
 
         var uniforms = {};
-        defineProperties(uniforms, {
+        Object.defineProperties(uniforms, {
             glowOnly : {
                 get : function() {
                     return bloomComposite.uniforms.glowOnly;
@@ -607,7 +606,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         });
 
         var uniforms = {};
-        defineProperties(uniforms, {
+        Object.defineProperties(uniforms, {
             intensity : {
                 get : function() {
                     return generate.uniforms.intensity;
