@@ -39,10 +39,22 @@ Renderer -> ShaderProgram
 	 -> UniformState #uniform values
 	
 	 -> Context #actual draw pipeline with bind vao & setUniforms & draw arrays or elements, also has extensions
-	
-	           -> bindFramebuffer
 
-	 -> ComputeCommand #compute shader
+		   -> draw() -> beginDraw() -> bindFramebuffer, applyRenderState(passState), shaderProgram._bind() -> RenderState.partialApply() -															>gl.ScissorTest,bending,viewport
+
+			     -> continueDraw() -> gl.draw()
+
+	 -> ComputeCommand #compute shader with gpgpu
+
+	 -> Pass #compute pass for offscreen fbo render
+	
+	 -> ComputeEngine #execute a draw command which includes vs, fs, shaderProgram, renderState, uniformMap, framebuffer£¬ outputTexture
+
+	 -> ClearCommand #Represents a command to the renderer for clearing a framebuffer.
+
+	 -> DrawCommand # Represents a command to the renderer for drawing. Can set .framebuffer
+
+		-> execute -> Context#draw()
 
 Scene -> Camera
       
@@ -60,6 +72,8 @@ Scene -> Camera
 
       -> Primitive #A primitive represents geometry in the Scene
 
+	  -> update() #Called when Viewer or CesiumWidget render the primitives
+
       -> Cesium3DTileStyleEngine #apply style use Batched3DModel3DTileContent applyStyle -> Cesium3DTileBatchTable applyStyle£¬setColor -> up-
 
 dateBatchTexture -> Texture.copyFrom  #create colorTexture from data arrayBufferView use batchValues.setColor changes batchValues.
@@ -71,6 +85,12 @@ dateBatchTexture -> Texture.copyFrom  #create colorTexture from data arrayBuffer
       -> FrameState #State information about the current frame.  An instance of this class is provided to update functions.
 
       -> Picking #select 3DTileSetFeature
+
+      -> executeComputeCommands() #call from firstViewport
+
+      -> executeCommands() #execute commands follow the Pass order.
+	
+	-> uniformState.updatePass()
 
 Just Debug It.See Call Stack.
 

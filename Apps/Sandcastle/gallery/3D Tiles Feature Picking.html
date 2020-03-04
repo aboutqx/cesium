@@ -26,7 +26,8 @@ function startup(Cesium) {
 // Building data courtesy of NYC OpenData portal: http://www1.nyc.gov/site/doitt/initiatives/3d-building.page
 var viewer = new Cesium.Viewer('cesiumContainer', {});
 
-viewer.scene.globe.depthTestAgainstTerrain = true;
+//viewer.scene.globe.depthTestAgainstTerrain = true;
+viewer.scene.light.intensity = .8
 
 var tileset = new Cesium.Cesium3DTileset({ url: '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json' });
 viewer.scene.primitives.add(tileset);
