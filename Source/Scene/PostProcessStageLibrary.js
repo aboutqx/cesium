@@ -387,7 +387,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         });
 
         var uniforms = {};
-        defineProperties(uniforms, {
+        Object.defineProperties(uniforms, {
             glowOnly : {
                 get : function() {
                     return bloomComposite.uniforms.glowOnly;

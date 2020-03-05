@@ -1,3 +1,7 @@
+Example Library for cesium£º
+
+https://github.com/MikesWei/CesiumMeshVisualizer
+
 Render pipeline:
 
 https://github.com/CesiumGS/cesium/wiki/Data-Driven-Renderer-Details
@@ -55,6 +59,8 @@ Renderer -> ShaderProgram
 	 -> DrawCommand # Represents a command to the renderer for drawing. Can set .framebuffer
 
 		-> execute -> Context#draw()
+
+		.vertexArray #vao
 
 Scene -> Camera
       
@@ -121,6 +127,7 @@ DataSource -> ModelVisualizer #map Entity#ModelGraphics to a Model£¬ while only 
 Scene -> Cesium3DTileset.root -> Cesium3DTile.content._batchTable -> Batched3DModel3DTileContent #getFeature(batchId) or _features  -> 
 
 Cesium3DTileFeature #pickId 
+
 	which is color
 
 	while batchId from Cesium3DTileBatchTable
