@@ -572,7 +572,7 @@ import Tonemapper from './Tonemapper.js';
         var fxaa = this._fxaa;
 
         tonemapping.enabled = useHdr;
-
+        tonemapping.enabled = false;
         var aoEnabled = ao.enabled && ao._isSupported(context);
         var bloomEnabled = bloom.enabled && bloom._isSupported(context);
         var tonemappingEnabled = tonemapping.enabled && tonemapping._isSupported(context);

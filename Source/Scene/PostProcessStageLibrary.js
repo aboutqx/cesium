@@ -27,6 +27,7 @@ import AutoExposure from './AutoExposure.js';
 import PostProcessStage from './PostProcessStage.js';
 import PostProcessStageComposite from './PostProcessStageComposite.js';
 import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
+import PixelDatatype from '../Renderer/PixelDatatype.js';
 
     /**
      * Contains functions for creating common post-process stages.
@@ -728,7 +729,8 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         return new PostProcessStage({
             name : 'czm_FXAA',
             fragmentShader : fxaaFS,
-            sampleMode : PostProcessStageSampleMode.LINEAR
+            sampleMode : PostProcessStageSampleMode.LINEAR,
+            pixelDatatype: PixelDatatype.HALF_FLOAT
         });
     };
 
@@ -746,7 +748,8 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
             fragmentShader : fs,
             uniforms : {
                 autoExposure : undefined
-            }
+            },
+            pixelDatatype: PixelDatatype.HALF_FLOAT
         });
     };
 

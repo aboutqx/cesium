@@ -95,6 +95,20 @@ import TextureWrap from '../Renderer/TextureWrap.js';
             })
         });
 
+        this._partialTexture = new Texture({
+            context : context,
+            width : width,
+            height : height,
+            pixelFormat : PixelFormat.RGBA,
+            pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
+            sampler : new Sampler({
+                wrapS : TextureWrap.CLAMP_TO_EDGE,
+                wrapT : TextureWrap.CLAMP_TO_EDGE,
+                minificationFilter : TextureMinificationFilter.NEAREST,
+                magnificationFilter : TextureMagnificationFilter.NEAREST
+            })
+        });
+
         if (context.depthTexture) {
             this._depthStencilTexture = new Texture({
                 context : context,
@@ -152,6 +166,14 @@ import TextureWrap from '../Renderer/TextureWrap.js';
             depthStencilRenderbuffer : this._depthStencilIdRenderbuffer,
             destroyAttachments : false
         });
+
+        this._partialFramebuffer = new Framebuffer({
+            context : context,
+            colorTextures : [this._partialTexture],
+            depthStencilTexture : this._depthStencilIdTexture,
+            depthStencilRenderbuffer : this._depthStencilIdRenderbuffer,
+            destroyAttachments : false
+        });
     };
 
     SceneFramebuffer.prototype.clear = function(context, passState, clearColor) {
@@ -174,6 +196,10 @@ import TextureWrap from '../Renderer/TextureWrap.js';
 
     SceneFramebuffer.prototype.getIdFramebuffer = function() {
         return this._idFramebuffer;
+    };
+
+    SceneFramebuffer.prototype.getPartialFramebuffer = function() {
+        return this._partialFramebuffer;
     };
 
     SceneFramebuffer.prototype.isDestroyed = function() {

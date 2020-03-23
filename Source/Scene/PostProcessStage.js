@@ -114,6 +114,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         this._sampleMode = defaultValue(options.sampleMode, PostProcessStageSampleMode.NEAREST);
         this._pixelFormat = pixelFormat;
         this._pixelDatatype = defaultValue(options.pixelDatatype, PixelDatatype.UNSIGNED_BYTE);
+        if(window.highDynamicRange) this._pixelDatatype = PixelDatatype.HALF_FLOAT
         this._clearColor = defaultValue(options.clearColor, Color.BLACK);
 
         this._uniformMap = undefined;
@@ -887,7 +888,7 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
      * @param {Texture} idTexture The id texture.
      * @private
      */
-    PostProcessStage.prototype.execute = function(context, colorTexture, depthTexture, idTexture) {
+    PostProcessStage.prototype.execute = function(context, colorTexture, depthTexture, idTexture, partialTextrue) {
         if (!defined(this._command) || !defined(this._command.framebuffer) || !this._ready || !this._enabled) {
             return;
         }
@@ -895,6 +896,9 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         this._colorTexture = colorTexture;
         this._depthTexture = depthTexture;
         this._idTexture = idTexture;
+
+        if(!partialTextrue) this._partialTextrue = null
+        else this._partialTextrue = partialTextrue;
 
         if (!Sampler.equals(this._colorTexture.sampler, this._sampler)) {
             this._colorTexture.sampler = this._sampler;

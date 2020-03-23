@@ -331,7 +331,7 @@ import StencilOperation from './StencilOperation.js';
         if (!defined(batchTable._batchValues)) {
             // Default batch texture to RGBA = 255: white highlight (RGB) and show/alpha = true/255 (A).
             var byteLength = getByteLength(batchTable);
-            var bytes = new Uint8Array(byteLength);
+            var bytes = batchTable._useHdr ? new Uint16Array(byteLength) : new Uint8Array(byteLength);
             arrayFill(bytes, 255);
             batchTable._batchValues = bytes;
         }
@@ -421,8 +421,8 @@ import StencilOperation from './StencilOperation.js';
             // Avoid allocating since the default is white
             return;
         }
-
-        var newColor = color.toBytes(scratchColorBytes);
+        if(color.red > 1. || color.green > 1. || color.blue > 1.) this._useHdr = true
+        var newColor = this._useHdr ? [color.red * 255, color.green * 255, color.blue * 255, color.alpha * 255]:color.toBytes(scratchColorBytes);
         var newAlpha = newColor[3];
 
         var batchValues = getBatchValues(this);
@@ -1437,7 +1437,7 @@ import StencilOperation from './StencilOperation.js';
         return new Texture({
             context : context,
             pixelFormat : PixelFormat.RGBA,
-            pixelDatatype : PixelDatatype.UNSIGNED_BYTE,
+            pixelDatatype : batchTable._useHdr? PixelDatatype.HALF_FLOAT : PixelDatatype.UNSIGNED_BYTE,
             source : {
                 width : dimensions.x,
                 height : dimensions.y,

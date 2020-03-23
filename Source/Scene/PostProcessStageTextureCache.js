@@ -5,6 +5,7 @@ import CesiumMath from '../Core/Math.js';
 import ClearCommand from '../Renderer/ClearCommand.js';
 import Framebuffer from '../Renderer/Framebuffer.js';
 import Texture from '../Renderer/Texture.js';
+import PixelDatatype from '../Renderer/PixelDatatype.js';
 
     /**
      * Creates a minimal amount of textures and framebuffers.

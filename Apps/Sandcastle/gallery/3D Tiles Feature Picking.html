@@ -17,7 +17,34 @@
 </style>
 <div id="cesiumContainer" class="fullSize"></div>
 <div id="loadingOverlay"><h1>Loading...</h1></div>
-<div id="toolbar"></div>
+<div id="toolbar">
+    <table><tbody>
+        <tr>
+            <td>Bloom</td>
+            <td><input type="checkbox" data-bind="checked: show"></td>
+        </tr>
+        <tr>
+            <td>Glow only</td>
+            <td><input type="checkbox" data-bind="checked: glowOnly"></td>
+        </tr>
+        <tr>
+            <td>Threshold</td>
+            <td><input type="range" min="0.0" max="1.0" step="0.01" data-bind="value: threshold, valueUpdate: 'input'"></td>
+        </tr>
+        <tr>
+            <td>Delta</td>
+            <td><input type="range" min="1" max="5" step="0.01" data-bind="value: delta, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Sigma</td>
+            <td><input type="range" min="1" max="10" step="0.01" data-bind="value: sigma, valueUpdate: 'input'"/></td>
+        </tr>
+        <tr>
+            <td>Step Size</td>
+            <td><input type="range" min="0" max="7" step="0.01" data-bind="value: stepSize, valueUpdate: 'input'"/></td>
+        </tr>
+    </tbody></table>
+</div>
 <script id="cesium_sandcastle_script">
 function startup(Cesium) {
     'use strict';
@@ -25,56 +52,96 @@ function startup(Cesium) {
 // A simple demo of 3D Tiles feature picking with hover and select behavior
 // Building data courtesy of NYC OpenData portal: http://www1.nyc.gov/site/doitt/initiatives/3d-building.page
 var viewer = new Cesium.Viewer('cesiumContainer', {});
-
+var path ='../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json'
+// var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/SWJZ/tileset.json'
 //viewer.scene.globe.depthTestAgainstTerrain = true;
 viewer.scene.light.intensity = .8
-
-var tileset = new Cesium.Cesium3DTileset({ url: '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json' });
+viewer.scene.sun = null
+var tileset = new Cesium.Cesium3DTileset({ url: path });
+// tileset.lightColor  = Cesium.Cartesian3.fromArray([1.1 ,1.8 ,1111111.4])
+tileset.style = new Cesium.Cesium3DTileStyle({
+    color: 'rgba(111,111,28898,10000)'
+});
 viewer.scene.primitives.add(tileset);
 viewer.zoomTo(tileset);
 
+// var tileset1 = new Cesium.Cesium3DTileset({ url: path });
+// tileset1.lightColor  = Cesium.Cartesian3.fromArray([1.1 ,.1 ,.4])
+// var translation = Cesium.Cartesian3.fromArray([38,28,0]);
+// tileset1.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+// viewer.scene.primitives.add(tileset1);
+var viewModel = {
+    show : true,
+    glowOnly : false,
+    threshold : 1.,
+    delta : 1.0,
+    sigma : 4.78,
+    stepSize : 3.0,
 
-var stages = viewer.scene.postProcessStages;
-var partialBloom = stages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
+};
+Cesium.knockout.track(viewModel);
+var toolbar = document.getElementById('toolbar');
+Cesium.knockout.applyBindings(viewModel, toolbar);
+for (var name in viewModel) {
+    if (viewModel.hasOwnProperty(name)) {
+        Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
+    }
+}
+viewer.scene.highDynamicRange = window.highDynamicRange = true;
+var PartialBloom = {
+
+    partialBloom: undefined,
+    bloom: function(tileset, scene){
+        if(!this.partialBloom) this.partialBloom = scene.postProcessStages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
+
+
+
+
+
+
+        // function getContents(root) {
+
+        //     if(root.content instanceof Cesium.Empty3DTileContent){
+        //         // do nothing
+        //     } else if(root.content&&root.content._model){
+
+        //         PartialBloom.contents.push(root.content._model)
+        //     }
+        //     //recurse
+        //     root.children.map(v => getContents(v))
+        // }
+
+        // var setBloom = function () {
+        //     if(!tileset.loaded) {
+        //         getContents(tileset.root)
+        //         PartialBloom.partialBloom.selected = PartialBloom.contents
+        //         console.log(PartialBloom.contents)
+        //         tileset.loaded = true
+        //     }
+
+        // }
+
+        // tileset.allTilesLoaded.addEventListener(setBloom);
+    }
+}
+PartialBloom.bloom(tileset, viewer.scene)
+// PartialBloom.bloom(tileset1, viewer.scene)
 
 function updatePostProcess() {
-    partialBloom.enabled = true;
-    partialBloom.uniforms.glowOnly = false;
-    partialBloom.uniforms.threshold = .3;
-    partialBloom.uniforms.delta = 1.;
-    partialBloom.uniforms.sigma = 3.78;
-    partialBloom.uniforms.stepSize = 3.78;
+    PartialBloom.partialBloom.enabled = Boolean(viewModel.show);
+    PartialBloom.partialBloom.uniforms.glowOnly = Boolean(viewModel.glowOnly);
+    PartialBloom.partialBloom.uniforms.threshold = Number(viewModel.threshold);
+    PartialBloom.partialBloom.uniforms.delta = Number(viewModel.delta);
+    PartialBloom.partialBloom.uniforms.sigma = Number(viewModel.sigma);
+    PartialBloom.partialBloom.uniforms.stepSize = Number(viewModel.stepSize);
 }
-updatePostProcess();
-var stage = partialBloom
-stage.selected = [];
+updatePostProcess()
 
-var contents = []
-var loaded = false
+function log() {
 
-function getContents(root) {
-
-    if(root.content instanceof Cesium.Empty3DTileContent){
-        // do nothing
-    } else if(root.content){
-        contents.push(root.content._model)
-    }
-    //recurse
-    root.children.map(v => getContents(v))
+    requestAnimationFrame(log)
 }
-
-tileset.allTilesLoaded.addEventListener(function () {
-    if(!loaded){
-        getContents(tileset.root)
-        console.log(contents)
-        loaded = true
-    }
-    if(contents.length) {
-        partialBloom.selected = contents
-    }
-
-});
-
+requestAnimationFrame(log)
 //Sandcastle_End
 Sandcastle.finishedLoading();
 }

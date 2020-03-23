@@ -3136,6 +3136,7 @@ import View from './View.js';
         var globeFramebuffer = useGlobeDepthFramebuffer ? globeDepth.framebuffer : undefined;
         var sceneFramebuffer = view.sceneFramebuffer.getFramebuffer();
         var idFramebuffer = view.sceneFramebuffer.getIdFramebuffer();
+        var partialFramebuffer = view.sceneFramebuffer.getPartialFramebuffer();
 
         if (environmentState.separatePrimitiveFramebuffer) {
             // Merge primitive framebuffer into globe framebuffer
@@ -3156,8 +3157,9 @@ import View from './View.js';
             var postProcess = this.postProcessStages;
             var colorTexture = inputFramebuffer.getColorTexture(0);
             var idTexture = idFramebuffer.getColorTexture(0);
+            var partialTexture = partialFramebuffer.getColorTexture(0)
             var depthTexture = defaultValue(globeFramebuffer, sceneFramebuffer).depthStencilTexture;
-            postProcess.execute(context, colorTexture, depthTexture, idTexture);
+            postProcess.execute(context, colorTexture, depthTexture, idTexture, partialTexture);
             postProcess.copy(context, defaultFramebuffer);
         }
 

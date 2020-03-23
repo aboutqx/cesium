@@ -97,7 +97,7 @@ for (var name in viewModel) {
         Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
     }
 }
-
+viewer.scene.highDynamicRange = true;
 function updatePostProcess() {
     var bloom = viewer.scene.postProcessStages.bloom;
     bloom.enabled = Boolean(viewModel.show);
