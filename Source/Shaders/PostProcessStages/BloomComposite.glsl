@@ -10,8 +10,8 @@ void main(void)
 
     vec4 bloom = texture2D(bloomTexture, v_textureCoordinates);
     vec3 result = glowOnly ? bloom.rgb : bloom.rgb + color.rgb;
-    //result = vec3(1.0) - exp(-result * 1.);
-    // also gamma correct while we're at it
-    //result = pow(result, vec3(1.0 / 2.2));
+    // result = vec3(1.0) - exp(-result * 1.);
+    // // also gamma correct while we're at it,disable default ace tonmapping
+    // result = pow(result, vec3(1.0 / 2.2));
     gl_FragColor = vec4(result, 1.);
 }

@@ -137,6 +137,7 @@ import defined from '../Core/defined.js';
          */
         pickId : {
             get : function() {
+                if(!this._content.batchTable) return;
                 return this._content.batchTable.getPickColor(this._batchId);
             }
         }

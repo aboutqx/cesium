@@ -54,14 +54,14 @@ function startup(Cesium) {
 var viewer = new Cesium.Viewer('cesiumContainer', {});
 var path ='../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json'
 // var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/SWJZ/tileset.json'
-//viewer.scene.globe.depthTestAgainstTerrain = true;
+viewer.scene.globe.depthTestAgainstTerrain = true;
 viewer.scene.light.intensity = .8
 viewer.scene.sun = null
 var tileset = new Cesium.Cesium3DTileset({ url: path });
-// tileset.lightColor  = Cesium.Cartesian3.fromArray([1.1 ,1.8 ,1111111.4])
-tileset.style = new Cesium.Cesium3DTileStyle({
-    color: 'rgba(111,111,28898,10000)'
-});
+// tileset.lightColor  = Cesium.Cartesian3.fromArray([.4,.6,.6])
+// tileset.style = new Cesium.Cesium3DTileStyle({
+//     color: 'rgba(13,13,153,153)'
+// });
 viewer.scene.primitives.add(tileset);
 viewer.zoomTo(tileset);
 
@@ -75,8 +75,8 @@ var viewModel = {
     glowOnly : false,
     threshold : 1.,
     delta : 1.0,
-    sigma : 4.78,
-    stepSize : 3.0,
+    sigma : 3.78,
+    stepSize : 3.78,
 
 };
 Cesium.knockout.track(viewModel);
@@ -87,41 +87,42 @@ for (var name in viewModel) {
         Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
     }
 }
-viewer.scene.highDynamicRange = window.highDynamicRange = true;
+// viewer.scene.highDynamicRange = true;
 var PartialBloom = {
-
+    contents: [],
     partialBloom: undefined,
     bloom: function(tileset, scene){
         if(!this.partialBloom) this.partialBloom = scene.postProcessStages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
 
+        function getContents(root) {
 
+            if(root.content instanceof Cesium.Empty3DTileContent){
+                // do nothing
+            } else if(root.content&&(root.content._model || root.content.featuresLength)){
+                if(root.content.featuresLength) {
+                    for (var i = 0; i < root.content.featuresLength; ++i) {
+                        var feature = root.content.getFeature(i);
+                        PartialBloom.contents.push(feature)
+                    }
 
+                }
+                else PartialBloom.contents.push(root.content._model)
+            }
+            //recurse
+            root.children.map(v => getContents(v))
+        }
 
+        var setBloom = function () {
+            if(!tileset.loaded) {
+                getContents(tileset.root)
+                PartialBloom.partialBloom.selected = PartialBloom.contents
+                console.log(PartialBloom.contents)
+                tileset.loaded = true
+            }
 
+        }
 
-        // function getContents(root) {
-
-        //     if(root.content instanceof Cesium.Empty3DTileContent){
-        //         // do nothing
-        //     } else if(root.content&&root.content._model){
-
-        //         PartialBloom.contents.push(root.content._model)
-        //     }
-        //     //recurse
-        //     root.children.map(v => getContents(v))
-        // }
-
-        // var setBloom = function () {
-        //     if(!tileset.loaded) {
-        //         getContents(tileset.root)
-        //         PartialBloom.partialBloom.selected = PartialBloom.contents
-        //         console.log(PartialBloom.contents)
-        //         tileset.loaded = true
-        //     }
-
-        // }
-
-        // tileset.allTilesLoaded.addEventListener(setBloom);
+        tileset.allTilesLoaded.addEventListener(setBloom);
     }
 }
 PartialBloom.bloom(tileset, viewer.scene)

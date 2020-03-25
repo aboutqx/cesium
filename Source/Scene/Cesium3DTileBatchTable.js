@@ -449,7 +449,7 @@ import StencilOperation from './StencilOperation.js';
 
             // Track number of translucent features so we know if this tile needs
             // opaque commands, translucent commands, or both for rendering.
-            var isTranslucent = (newAlpha !== 255);
+            var isTranslucent = (newAlpha < 255);
             if (isTranslucent && !wasTranslucent) {
                 ++this._translucentFeaturesLength;
             } else if (!isTranslucent && wasTranslucent) {

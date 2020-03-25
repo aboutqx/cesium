@@ -104,7 +104,7 @@ for (var name in viewModel) {
         Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
     }
 }
-viewer.scene.highDynamicRange = window.highDynamicRange = true;
+viewer.scene.highDynamicRange =  true;
 var stages = viewer.scene.postProcessStages;
 var partialBloom = stages.add(Cesium.PostProcessStageLibrary.partialBloomStage());
 

@@ -199,3 +199,7 @@ Cesium3DTileFeature #pickId
 	#root may have Empty3DTileContent, selectedTiles always change with view.
 
 content.applyStyle -> featureLenght === 0 设置model的属性 model.color = ''，反之有feature,使用batchTable.applyStyle
+
+ Batched3DModel3DTileContent.update #渲染3d model和3d tile
+
+BatchTable.getBatchedAttribute #unpack batch value from b3dm
