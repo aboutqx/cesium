@@ -574,6 +574,7 @@ import TextureMinificationFilter from './TextureMinificationFilter.js';
         }
 
         gl.bindTexture(target, null);
+        return this;
     };
 
     /**

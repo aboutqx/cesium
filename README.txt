@@ -203,3 +203,18 @@ content.applyStyle -> featureLenght === 0 设置model的属性 model.color = ''�
  Batched3DModel3DTileContent.update #渲染3d model和3d tile
 
 BatchTable.getBatchedAttribute #unpack batch value from b3dm
+
+Cesium3DTileContentFactory  #b3dm :return new Batched3DModel3DTileContent
+
+Cesium3DTileStyle #this.color.getShaderFunction
+
+BatchTable #Creates a texture to look up per instance attributes for batched primitives. For example, store each primitive's pick color in the texture.
+
+Material createUnifrom: if (uniformType === 'sampler2D') {
+                material._uniforms[newUniformId] = function() {
+                    return material._textures[uniformId];
+                };
+                material._updateFunctions.push(createTexture2DUpdateFunction(uniformId));
+            } #贴图使用方法返回相应_tetxures里面的值，并且使用updateFunctions来更新_textures
+
+uniformState.updateCamera #设置camera的position和三个向量

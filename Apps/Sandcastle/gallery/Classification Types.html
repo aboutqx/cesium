@@ -42,7 +42,7 @@ var polygon = viewer.entities.add({
         classificationType : Cesium.ClassificationType.BOTH
     }
 });
-
+console.log(Cesium.Cartesian3.fromRadiansArray([-1.3194369277314022, 0.6988062530900625, -1.3193955980204217, 0.6988091578771254, -1.3193931220959367, 0.698743632490865, -1.3194358224045408, 0.6987471965556998]))
 var polyline = viewer.entities.add({
     polyline : {
         positions : Cesium.Cartesian3.fromDegreesArray([
@@ -97,6 +97,23 @@ var materialOptions = [{
     text : 'Textured Material',
     onselect : function() {
         polygon.polygon.material = '../images/Cesium_Logo_Color.jpg';
+    }
+}, {
+    text : 'Custom Texture',
+    onselect : function() {
+        polygon.polygon.material = new Cesium.Material({
+                    fabric: {
+                        type: 'Image',
+                        uniforms: {
+                            image: new Cesium.Texture({context: viewer.scene.context, width:1, height: 1}).copyFrom({
+                                width: 1,
+                                height: 1,
+                                arrayBufferView: new Uint8Array([255, 255, 0, 255])
+                            })
+                            // image: viewer.scene.view.sceneFramebuffer.getPartialFramebuffer().getColorTexture(0)
+                        }
+                    }
+                })
     }
 }];
 

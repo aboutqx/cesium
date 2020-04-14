@@ -991,7 +991,9 @@ import when from '../ThirdParty/when.js';
                     uniformType = 'sampler2D';
                 }
             } else if (type === 'object') {
-                if (Array.isArray(uniformValue)) {
+                if(uniformValue instanceof Texture) {
+                    uniformType = 'sampler2D'
+                }else if (Array.isArray(uniformValue)) {
                     if (uniformValue.length === 4 || uniformValue.length === 9 || uniformValue.length === 16) {
                         uniformType = 'mat' + Math.sqrt(uniformValue.length);
                     }

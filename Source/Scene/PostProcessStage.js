@@ -114,10 +114,10 @@ import PostProcessStageSampleMode from './PostProcessStageSampleMode.js';
         this._sampleMode = defaultValue(options.sampleMode, PostProcessStageSampleMode.NEAREST);
         this._pixelFormat = pixelFormat;
         this._pixelDatatype = defaultValue(options.pixelDatatype, PixelDatatype.UNSIGNED_BYTE);
-        // if(options.name === 'bloom_threshold' || options.name == 'czm_partial_bloom_blur_x_direction'
-        //     || options.name == 'czm_partial_bloom_blur_y_direction' || options.name =='czm_partial_bloom_generate_composite') {
-        //     this._pixelDatatype = PixelDatatype.HALF_FLOAT
-        // }
+        if(options.name === 'bloom_threshold' || options.name == 'czm_partial_bloom_blur_x_direction'
+            || options.name == 'czm_partial_bloom_blur_y_direction' || options.name =='czm_partial_bloom_generate_composite') {
+            this._pixelDatatype = PixelDatatype.HALF_FLOAT
+        }
 
         this._clearColor = defaultValue(options.clearColor, Color.BLACK);
 

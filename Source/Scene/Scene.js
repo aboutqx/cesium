@@ -731,6 +731,21 @@ import View from './View.js';
          */
         this.light = new SunLight();
 
+        this.lights = [
+            {
+                type: 0, //directional
+                direction: [],
+                color: []
+            },
+            {
+                type: 1, //point
+                position: [],
+                color: [],
+                constant: 1,
+				linear: .09,
+				quadratic: .032
+            }
+        ]
         // Give frameState, camera, and screen space camera controller initial state before rendering
         updateFrameNumber(this, 0.0, JulianDate.now());
         this.updateFrameState();
@@ -1789,6 +1804,7 @@ import View from './View.js';
         frameState.invertClassification = this.invertClassification;
         frameState.useLogDepth = this._logDepthBuffer && !(this.camera.frustum instanceof OrthographicFrustum || this.camera.frustum instanceof OrthographicOffCenterFrustum);
         frameState.light = this.light;
+        frameState.lights = this.lights;
         frameState.cameraUnderground = this._cameraUnderground;
 
         if (defined(this._specularEnvironmentMapAtlas) && this._specularEnvironmentMapAtlas.ready) {
@@ -2514,6 +2530,66 @@ import View from './View.js';
             }
 
             passState.framebuffer = originalFramebuffer;
+
+            if(scene.usePartial) { //personal framebuffer
+                passState.framebuffer = view.sceneFramebuffer.getPartialFramebuffer();
+                var flipCamera = Camera.clone(camera);
+
+                // flipCamera.position.y = -flipCamera.position.y
+                // // flipCamera.direction.y = -flipCamera.direction.y
+                // flipCamera.up.y = -flipCamera.up.y
+                // flipCamera.direction
+
+
+
+                us.updateCamera(flipCamera);
+
+                // new ClearCommand({
+                //     color: new Color(1., 0, 0, 1.)
+                // }).execute(context, passState)
+
+
+                us.updatePass(Pass.GLOBE);
+                commands = frustumCommands.commands[Pass.GLOBE];
+                length = frustumCommands.indices[Pass.GLOBE];
+                for (j = 0; j < length; ++j) {
+                    executeCommand(commands[j], scene, context, passState);
+                }
+
+                if (clearGlobeDepth) {
+                    clearDepth.framebuffer = passState.framebuffer;
+                    clearDepth.execute(context, passState);
+                    clearDepth.framebuffer = undefined;
+                }
+
+                if (clearGlobeDepth && useDepthPlane) {
+                    depthPlane.execute(context, passState);
+                }
+
+                us.updatePass(Pass.CESIUM_3D_TILE);
+                commands = frustumCommands.commands[Pass.CESIUM_3D_TILE];
+                length = frustumCommands.indices[Pass.CESIUM_3D_TILE];
+                for (j = 0; j < length; ++j) {
+                    executeCommand(commands[j], scene, context, passState);
+                }
+
+                // us.updatePass(Pass.OPAQUE);
+                // commands = frustumCommands.commands[Pass.OPAQUE];
+                // length = frustumCommands.indices[Pass.OPAQUE];
+                // for (j = 0; j < length; ++j) {
+                //     executeCommand(commands[j], scene, context, passState);
+                // }
+
+                us.updatePass(Pass.TRANSLUCENT);
+                commands = frustumCommands.commands[Pass.TRANSLUCENT];
+                length = frustumCommands.indices[Pass.TRANSLUCENT];
+                for (j = 0; j < length; ++j) {
+                    executeCommand(commands[j], scene, context, passState);
+                }
+
+                passState.framebuffer = originalFramebuffer;
+            }
+
         }
     }
 

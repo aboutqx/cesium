@@ -1,0 +1,548 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v1.0.5",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        3
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Prop",
+      "translation": [
+        1.9191499948501587,
+        -0.6840609908103943,
+        -3.4093198776245117
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "mesh": 0,
+      "name": "Prop__2_",
+      "translation": [
+        1.9191499948501587,
+        -0.6840609908103943,
+        3.4093198776245117
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "children": [
+        1,
+        0
+      ],
+      "name": "Cesium_Air",
+      "matrix": [
+        -5.9604640958854195e-8,
+        0,
+        0.9999999061668225,
+        0,
+        1.685873811097342e-7,
+        -0.9999999061668101,
+        1.0048591264130473e-14,
+        0,
+        0.9999999061668083,
+        1.685873811097345e-7,
+        5.960464095885335e-8,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "mesh": 1
+    }
+  ],
+  "animations": [
+    {
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 0,
+            "path": "rotation"
+          }
+        }
+      ],
+      "name": "Prop__2_Action_Prop",
+      "samplers": [
+        {
+          "input": 12,
+          "interpolation": "LINEAR",
+          "output": 13
+        }
+      ]
+    },
+    {
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 1,
+            "path": "rotation"
+          }
+        }
+      ],
+      "name": "PropAction_Prop__2_",
+      "samplers": [
+        {
+          "input": 12,
+          "interpolation": "LINEAR",
+          "output": 14
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1,
+          "texCoord": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "prop"
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Prop",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Cesium_Air",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "source": 0,
+      "sampler": 0
+    },
+    {
+      "source": 1,
+      "sampler": 0
+    }
+  ],
+  "images": [
+    {
+      "name": "Image_0",
+      "uri": "Cesium_Air_img0.jpg"
+    },
+    {
+      "name": "Image_1",
+      "uri": "Cesium_Air_img1.png"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 78,
+      "max": [
+        0.5895140171051025,
+        0.25182101130485535,
+        0.25182101130485535
+      ],
+      "min": [
+        -0.000022888199964654632,
+        -0.25182101130485535,
+        -0.25182101130485535
+      ],
+      "type": "VEC3",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 78,
+      "type": "VEC3",
+      "byteOffset": 0,
+      "min": [
+        0.13838988542556763,
+        -0.9893544912338257,
+        -0.9893922805786133
+      ],
+      "max": [
+        0.9999536275863647,
+        0.9894203543663025,
+        0.9893715977668762
+      ]
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5126,
+      "count": 78,
+      "type": "VEC2",
+      "byteOffset": 0,
+      "min": [
+        0.5124710202217102,
+        0.5582680106163025
+      ],
+      "max": [
+        0.5661399960517883,
+        0.585023045539856
+      ]
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5123,
+      "count": 360,
+      "type": "SCALAR",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 72,
+      "max": [
+        0.08199869841337204,
+        1.596229910850525,
+        1.5962499380111694
+      ],
+      "min": [
+        0.08199869841337204,
+        -1.5962599515914917,
+        -1.5962499380111694
+      ],
+      "type": "VEC3",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 10,
+      "componentType": 5126,
+      "count": 72,
+      "type": "VEC3",
+      "byteOffset": 0,
+      "min": [
+        0.9999999403953552,
+        0,
+        -2.242414254283176e-8
+      ],
+      "max": [
+        1,
+        0,
+        4.4847940472436676e-8
+      ]
+    },
+    {
+      "bufferView": 11,
+      "componentType": 5126,
+      "count": 72,
+      "type": "VEC2",
+      "byteOffset": 0,
+      "min": [
+        0.10557399690151215,
+        0.10557401180267334
+      ],
+      "max": [
+        0.8944259881973267,
+        0.8944259881973267
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5123,
+      "count": 72,
+      "type": "SCALAR",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 12,
+      "componentType": 5126,
+      "count": 3888,
+      "max": [
+        12.868297576904297,
+        5.464059352874756,
+        8.004698753356934
+      ],
+      "min": [
+        -12.868298530578613,
+        -2.2960000038146973,
+        -13.39689826965332
+      ],
+      "type": "VEC3",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 13,
+      "componentType": 5126,
+      "count": 3888,
+      "type": "VEC3",
+      "byteOffset": 0,
+      "min": [
+        -1,
+        -0.9999970197677612,
+        -0.9966694712638855
+      ],
+      "max": [
+        1,
+        0.9999991059303284,
+        0.9999930262565613
+      ]
+    },
+    {
+      "bufferView": 14,
+      "componentType": 5126,
+      "count": 3888,
+      "type": "VEC2",
+      "byteOffset": 0,
+      "min": [
+        0.02500000037252903,
+        0.02499997615814209
+      ],
+      "max": [
+        0.9526770114898682,
+        0.9750000238418579
+      ]
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5123,
+      "count": 17088,
+      "type": "SCALAR",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 31,
+      "max": [
+        1.25
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 31,
+      "type": "VEC4",
+      "byteOffset": 0
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 31,
+      "type": "VEC4",
+      "byteOffset": 0
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 720,
+      "byteOffset": 0,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 144,
+      "byteOffset": 720,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 34176,
+      "byteOffset": 864,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 124,
+      "byteOffset": 35040
+    },
+    {
+      "buffer": 0,
+      "byteLength": 496,
+      "byteOffset": 35164
+    },
+    {
+      "buffer": 0,
+      "byteLength": 496,
+      "byteOffset": 35660
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 36156,
+      "byteLength": 936,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 37092,
+      "byteLength": 936,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 38028,
+      "byteLength": 624,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 38652,
+      "byteLength": 864,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 39516,
+      "byteLength": 864,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 40380,
+      "byteLength": 576,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 40956,
+      "byteLength": 46656,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 87612,
+      "byteLength": 46656,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 134268,
+      "byteLength": 31104,
+      "byteStride": 8,
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Cesium_Air_data.bin",
+      "byteLength": 165372
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ]
+}

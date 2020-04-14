@@ -199,7 +199,7 @@ Sandcastle.addToolbarButton('Pick position', function() {
                         '\nAlt: ' + ('   ' + heightString).slice(-7) + 'm';
 
                     labelEntity.label.eyeOffset = new Cesium.Cartesian3(0.0, 0.0, -cartographic.height * (scene.mode === Cesium.SceneMode.SCENE2D ? 1.5 : 1.0));
-
+                    console.log(cartesian)
                     foundPosition = true;
                 }
             }

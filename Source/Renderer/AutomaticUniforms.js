@@ -7,6 +7,7 @@ import WebGLConstants from '../Core/WebGLConstants.js';
     function AutomaticUniform(options) {
         this._size = options.size;
         this._datatype = options.datatype;
+        this._struct = options.struct;
         this.getValue = options.getValue;
     }
 
@@ -30,6 +31,22 @@ import WebGLConstants from '../Core/WebGLConstants.js';
     datatypeToGlsl[WebGLConstants.SAMPLER_CUBE] = 'samplerCube';
 
     AutomaticUniform.prototype.getDeclaration = function(name) {
+        if(this._datatype === 'struct') {
+            var structName = name.toUpperCase()
+            var declaration =  `struct ${structName}{ \n`
+            for(let key in this._struct) {
+                declaration += `  ${this._struct[key]} ${key}; \n`
+            }
+            declaration += '}\n'
+
+            if(this._size > 1) {
+                declaration +=`uniform ${structName} ${name}[${this._size}];\n`
+            } else {
+                declaration +=`uniform ${structName} ${name};\n`
+            }
+            // console.log(declaration)
+            return declaration;
+        }
         var declaration = 'uniform ' + datatypeToGlsl[this._datatype] + ' ' + name;
 
         var size = this._size;
@@ -1891,6 +1908,22 @@ import WebGLConstants from '../Core/WebGLConstants.js';
             datatype : WebGLConstants.FLOAT_VEC3,
             getValue : function(uniformState) {
                 return uniformState.ellipsoid.oneOverRadii;
+            }
+        }),
+
+        czm_lights : new AutomaticUniform({
+            size: 10,
+            datatype : 'struct',
+            struct: {
+                type: 'int', //point
+                position: 'vec3',
+                color: 'vec3',
+                constant: 'int',
+				linear: 'float',
+				quadratic: 'float'
+            },
+            getValue : function(uniformState) {
+                return uniformState.lights;
             }
         })
     };
