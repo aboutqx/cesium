@@ -362,6 +362,17 @@ import AutomaticUniforms from './AutomaticUniforms.js';
         }
     }
 
+    ShaderSource.updateAutomaticUniforms = function() {
+        for ( var uniformName in AutomaticUniforms) {
+            if (AutomaticUniforms.hasOwnProperty(uniformName)) {
+                var uniform = AutomaticUniforms[uniformName];
+                if (typeof uniform.getDeclaration === 'function') {
+                    ShaderSource._czmBuiltinsAndUniforms[uniformName] = uniform.getDeclaration(uniformName);
+                }
+            }
+        }
+    }
+
     ShaderSource.createPickVertexShaderSource = function(vertexShaderSource) {
         var renamedVS = ShaderSource.replaceMain(vertexShaderSource, 'czm_old_main');
         var pickMain = 'attribute vec4 pickColor; \n' +

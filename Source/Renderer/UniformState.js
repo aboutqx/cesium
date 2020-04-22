@@ -1199,8 +1199,8 @@ import SunLight from '../Scene/SunLight.js';
         } else {
             Cartesian3.clone(lightColorHdr, this._lightColor);
         }
-
         this._lights = frameState.lights
+
         var brdfLutGenerator = frameState.brdfLutGenerator;
         var brdfLut = defined(brdfLutGenerator) ? brdfLutGenerator.colorTexture : undefined;
         this._brdfLut = brdfLut;

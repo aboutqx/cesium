@@ -1,4 +1,6 @@
-﻿Example Library for cesium：
+﻿终极奥义： 查找 new ShaderProgram进行debug，这个是只在ShaderCache里出现一次的，依此被每个渲染物体的update方法调用，而且能看到vertex和fragment代码
+
+Example Library for cesium：
 
 https://github.com/MikesWei/CesiumMeshVisualizer
 
@@ -64,7 +66,7 @@ Rendering Pipipeline：
 
 		......->updateAndClearFramebuffers
 
-			->postProcess.update()                    
+			->postProcess.update()
 
 		......->executeCommands
 
@@ -218,3 +220,5 @@ Material createUnifrom: if (uniformType === 'sampler2D') {
             } #贴图使用方法返回相应_tetxures里面的值，并且使用updateFunctions来更新_textures
 
 uniformState.updateCamera #设置camera的position和三个向量
+
+Model.createVertexBuffer #创建position，normal等的buffer

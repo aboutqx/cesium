@@ -1,4 +1,5 @@
 import Cartesian3 from '../Core/Cartesian3.js';
+import Cartesian4 from '../Core/Cartesian4.js';
 import Matrix4 from '../Core/Matrix4.js';
 import WebGLConstants from '../Core/WebGLConstants.js';
 
@@ -37,14 +38,13 @@ import WebGLConstants from '../Core/WebGLConstants.js';
             for(let key in this._struct) {
                 declaration += `  ${this._struct[key]} ${key}; \n`
             }
-            declaration += '}\n'
+            declaration += '};\n'
 
             if(this._size > 1) {
                 declaration +=`uniform ${structName} ${name}[${this._size}];\n`
             } else {
                 declaration +=`uniform ${structName} ${name};\n`
             }
-            // console.log(declaration)
             return declaration;
         }
         var declaration = 'uniform ' + datatypeToGlsl[this._datatype] + ' ' + name;
@@ -1916,14 +1916,24 @@ import WebGLConstants from '../Core/WebGLConstants.js';
             datatype : 'struct',
             struct: {
                 type: 'int', //point
-                position: 'vec3',
+                positionEC: 'vec3',
                 color: 'vec3',
-                constant: 'int',
+                constant: 'float',
 				linear: 'float',
 				quadratic: 'float'
             },
-            getValue : function(uniformState) {
-                return uniformState.lights;
+            getValue : function(uniformState, i , prop) {
+
+                if(!uniformState.lights[i]) return
+                else {
+                    if(prop === 'positionEC' && uniformState.lights[i].position) {
+                        let t = new Cartesian4()
+                        let lightPos = uniformState.lights[i].position
+                        Matrix4.multiplyByVector(uniformState.modelView, new Cartesian4(lightPos.x, lightPos.y,lightPos.z,1), t);
+                        uniformState.lights[i].positionEC = new Cartesian3(t.x, t.y, t.z)
+                        return uniformState.lights[i].positionEC
+                    } else return uniformState.lights[i][prop];
+                }
             }
         })
     };

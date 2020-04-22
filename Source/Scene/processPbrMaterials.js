@@ -868,6 +868,16 @@ import ModelUtility from './ModelUtility.js';
             fragmentShader += '    gl_FragColor = vec4(color, 1.0);\n';
         }
 
+        fragmentShader += `
+            #ifdef HAS_SCENE_LIGHTS
+                vec3 finalColor;
+                vec3 pos = czm_lights[1].positionEC;
+                float distance = length( pos - v_positionEC) ;
+                float attenuation = 1.0 / (czm_lights[1].constant + czm_lights[1].linear * distance + czm_lights[1].quadratic * distance * distance);
+                finalColor = czm_lights[1].color * attenuation;
+                gl_FragColor = vec4(vec3(finalColor), 1.);
+            #endif
+            `
         fragmentShader += '}\n';
 
         // Add shaders

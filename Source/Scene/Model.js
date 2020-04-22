@@ -2392,6 +2392,10 @@ import ShadowMode from './ShadowMode.js';
             drawFS = '#define USE_SUN_LUMINANCE \n' + 'uniform float gltf_luminanceAtZenith;\n' + drawFS;
         }
 
+        if(model._scene&&model._scene.lights) {
+            drawFS = '#define HAS_SCENE_LIGHTS\n ' + drawFS;
+        }
+
         createAttributesAndProgram(programId, techniqueId, drawFS, drawVS, model, context);
     }
 

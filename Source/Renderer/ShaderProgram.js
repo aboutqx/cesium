@@ -309,7 +309,7 @@ import createUniformArray from './createUniformArray.js';
 
             // Ignore GLSL built-in uniforms returned in Firefox.
             if (uniformName.indexOf('gl_') !== 0) {
-                if (activeUniform.name.indexOf('[') < 0) {
+                if (activeUniform.name.indexOf('[') < 0 || uniformName.indexOf('.') >= 0) {
                     // Single uniform
                     var location = gl.getUniformLocation(program, uniformName);
 
@@ -407,6 +407,7 @@ import createUniformArray from './createUniformArray.js';
                     uniformName = duplicateUniform;
                 }
                 var automaticUniform = AutomaticUniforms[uniformName];
+                if(uniformName.indexOf('.')!== -1) automaticUniform = AutomaticUniforms[uniformName.split('[')[0]]
                 if (defined(automaticUniform)) {
                     automaticUniforms.push({
                         uniform : uniformObject,
@@ -529,7 +530,12 @@ import createUniformArray from './createUniformArray.js';
         len = automaticUniforms.length;
         for (i = 0; i < len; ++i) {
             var au = automaticUniforms[i];
-            au.uniform.value = au.automaticUniform.getValue(uniformState);
+            if(au.uniform.name.indexOf('.')!== -1) {
+                var index = au.uniform.name.split('[')[1].split(']')[0]
+                var prop = au.uniform.name.split('.')[1]
+                au.uniform.value = au.automaticUniform.getValue(uniformState, index, prop);
+            }
+            else au.uniform.value = au.automaticUniform.getValue(uniformState);
         }
 
         ///////////////////////////////////////////////////////////////////

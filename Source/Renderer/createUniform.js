@@ -120,6 +120,7 @@ import RuntimeError from '../Core/RuntimeError.js';
 
     UniformFloatVec3.prototype.set = function() {
         var v = this.value;
+        if(!v) return;
 
         if (defined(v.red)) {
             if (!Color.equals(v, this._value)) {

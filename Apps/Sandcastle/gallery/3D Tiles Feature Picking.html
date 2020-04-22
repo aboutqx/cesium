@@ -64,81 +64,93 @@
             // A simple demo of 3D Tiles feature picking with hover and select behavior
             // Building data courtesy of NYC OpenData portal: http://www1.nyc.gov/site/doitt/initiatives/3d-building.page
             var viewer = new Cesium.Viewer('cesiumContainer', {});
-            var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json'
-            // var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/SWJZ/tileset.json'
+            var path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/CH/tileset.json'
+            // var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json'
             var scene = viewer.scene
 
-            // var tileset = new Cesium.Cesium3DTileset({ url: path });
-            // var tileset = new Cesium.Cesium3DTileset({ url: Cesium.IonResource.fromAssetId(40866) });
+            var tileset = new Cesium.Cesium3DTileset({ url: path });
+            viewer.zoomTo(tileset)
+            path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/JZ/tileset.json'
+            var tileset1 = new Cesium.Cesium3DTileset({ url: path });
 
-            // tileset.lightColor  = Cesium.Cartesian3.fromArray([1.4,1.6,1.6])
-            // tileset.style = new Cesium.Cesium3DTileStyle({
-            //     color: 'rgba(111,111,28898,10000)'
-            // });
-            // viewer.scene.primitives.add(tileset);
+            // tileset.lightColor  = Cesium.Cartesian3.fromArray([299999.4,2.6,2.6])
+            tileset.style = new Cesium.Cesium3DTileStyle({
+                color: 'rgba(7000,7000,7000,7000)'
+            });
+            viewer.scene.primitives.add(tileset);
+            tileset1.style = new Cesium.Cesium3DTileStyle({
+                color: 'rgba(100.3,100.3,100.6,.5)'
+            });
+            viewer.scene.primitives.add(tileset1);
+            path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/LK/tileset.json'
+            var tileset2 = new Cesium.Cesium3DTileset({ url: path });
+            tileset2.style = new Cesium.Cesium3DTileStyle({
+                color: 'rgba(111,111,28898,10000)'
+            });
+            viewer.scene.primitives.add(tileset2);
             // tileset.readyPromise.then(function(){
             //     var boundingSphere = tileset.boundingSphere;
             //     viewer.camera.viewBoundingSphere(boundingSphere, new Cesium.HeadingPitchRange(0.0, -0.5, boundingSphere.radius + 500.0));
             //     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
 
             // });
-            function setTime(iso8601) {
-                var currentTime = Cesium.JulianDate.fromIso8601(iso8601);
-                var endTime = Cesium.JulianDate.addDays(currentTime, 2, new Cesium.JulianDate());
+            // function setTime(iso8601) {
+            //     var currentTime = Cesium.JulianDate.fromIso8601(iso8601);
+            //     var endTime = Cesium.JulianDate.addDays(currentTime, 2, new Cesium.JulianDate());
 
-                viewer.clock.currentTime = currentTime;
-                viewer.timeline.zoomTo(currentTime, endTime);
-            }
-            scene.globe.enableLighting = true;
+            //     viewer.clock.currentTime = currentTime;
+            //     viewer.timeline.zoomTo(currentTime, endTime);
+            // }
+            // scene.globe.enableLighting = true;
             // scene.globe.dynamicAtmosphereLightingFromSun = true;
             // setTime('2020-01-10T05:29:41.17946898164518643Z');
-            var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 30);
-            var url = '../../SampleData/models/bwg/lk.gltf';
-            viewer.trackedEntity = viewer.entities.add({
-                name : url,
-                position : position,
-                model : {
-                    uri : url,
-                    color: new Cesium.Color(1,5,23,10)
-                }
-            });
-            // url = '../../SampleData/models/jxbwg/scene.gltf';
-            url = '../../SampleData/models/bwg/ch.gltf';
-            viewer.entities.add({
-                name : url,
-                position : position,
-                model : {
-                    uri : url,
-                    color: new Cesium.Color(70,70,70,70)
-                }
-            });
-            url = '../../SampleData/models/bwg/ding.gltf';
-            viewer.entities.add({
-                name : url,
-                position : position,
-                model : {
-                    uri : url,
-                    color: new Cesium.Color(0,.5,.9,.8)
-                }
-            });
-            url = '../../SampleData/models/bwg/jz.gltf';
-            viewer.entities.add({
-                name : url,
-                position : position,
-                model : {
-                    uri : url,
-                    color: new Cesium.Color(1,2,2,.5)
-                }
-            });
-            url = '../../SampleData/models/bwg/dx.gltf';
-            viewer.entities.add({
-                name : url,
-                position : Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706),
-                model : {
-                    uri : url,
-                    lightColor: new Cesium.Cartesian3(.3,.5,.3)
-                }
-            });
+            var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 0);
+            var url = '../../SampleData/models/jiangxi.glb';
+            // viewer.trackedEntity = viewer.entities.add({
+            //     name : url,
+            //     position : position,
+            //     model : {
+            //         uri : url,
+            //         color: new Cesium.Color(1., 1., 1., 1)
+            //     }
+            // });
+            // // url = '../../SampleData/models/jxbwg/scene.gltf';
+            // url = '../../SampleData/models/bwg/ch.gltf';
+            // viewer.entities.add({
+            //     name : url,
+            //     position : position,
+            //     model : {
+            //         uri : url,
+            //         color: new Cesium.Color(70,70,70,70)
+            //     }
+            // });
+            // url = '../../SampleData/models/bwg/ding.gltf';
+            // viewer.entities.add({
+            //     name : url,
+            //     position : position,
+            //     model : {
+            //         uri : url,
+            //         color: new Cesium.Color(0,.5,.9,.8)
+            //     }
+            // });
+            // url = '../../SampleData/models/bwg/jz.gltf';
+            // viewer.entities.add({
+            //     name : url,
+            //     position : position,
+            //     model : {
+            //         uri : url,
+            //         color: new Cesium.Color(0,0,0,1.)
+            //     }
+            // });
+            // url = '../../SampleData/models/bwg/dx.gltf';
+            // viewer.entities.add({
+            //     name : url,
+            //     position : Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706),
+            //     model : {
+            //         uri : url,
+            //         // lightColor: new Cesium.Cartesian3(.3,.5,.3)
+            //     }
+            // });
 
 
             var directionalLight = new Cesium.DirectionalLight({
@@ -206,11 +218,11 @@
 
                     }
 
-                    //tileset.allTilesLoaded.addEventListener(setBloom);
+                    // tileset.allTilesLoaded.addEventListener(setBloom);
                 }
             }
-            PartialBloom.bloom(viewer.trackedEntity, viewer.scene)
-            // PartialBloom.bloom(tileset1, viewer.scene)
+            // PartialBloom.bloom(viewer.trackedEntity, viewer.scene)
+            PartialBloom.bloom(tileset, viewer.scene)
 
             function updatePostProcess() {
                 PartialBloom.partialBloom.enabled = Boolean(viewModel.show);
@@ -223,6 +235,23 @@
             updatePostProcess()
             viewer.scene.postProcessStages.fxaa.enabled = true;
             // tileset.allTilesLoaded.addEventListener(addRect);
+
+//x: -2505695.8803171427, y: -3847568.0983392517, z: 4412222.415356382
+            let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            handler.setInputAction(function(movement) {
+
+                var foundPosition = false;
+
+                var scene = viewer.scene;
+                if (scene.mode !== Cesium.SceneMode.MORPHING) {
+                    var pickedObject = scene.pick(movement.endPosition);
+                    if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity) {
+                        var cartesian = viewer.scene.pickPosition(movement.endPosition);
+                        console.log(cartesian)
+                    }
+                }
+
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             function addRect() {
                 viewer.scene.usePartial = true

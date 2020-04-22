@@ -329,7 +329,7 @@ import StencilOperation from './StencilOperation.js';
         if (!defined(batchTable._batchValues)) {
             // Default batch texture to RGBA = 255: white highlight (RGB) and show/alpha = true/255 (A).
             var byteLength = getByteLength(batchTable);
-            var bytes = batchTable._useHdr ? new Uint16Array(byteLength) : new Uint8Array(byteLength);
+            var bytes = batchTable._useHdr ? new (byteLength) : new Uint8Array(byteLength);
             arrayFill(bytes, 255);
             batchTable._batchValues = bytes;
         }

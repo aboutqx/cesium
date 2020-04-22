@@ -73,6 +73,7 @@ import SunLight from './SunLight.js';
 import SunPostProcess from './SunPostProcess.js';
 import TweenCollection from './TweenCollection.js';
 import View from './View.js';
+import AutomaticUniforms from '../renderer/AutomaticUniforms.js';
 
     var requestRenderAfterFrame = function (scene) {
         return function () {
@@ -731,21 +732,6 @@ import View from './View.js';
          */
         this.light = new SunLight();
 
-        this.lights = [
-            {
-                type: 0, //directional
-                direction: [],
-                color: []
-            },
-            {
-                type: 1, //point
-                position: [],
-                color: [],
-                constant: 1,
-				linear: .09,
-				quadratic: .032
-            }
-        ]
         // Give frameState, camera, and screen space camera controller initial state before rendering
         updateFrameNumber(this, 0.0, JulianDate.now());
         this.updateFrameState();

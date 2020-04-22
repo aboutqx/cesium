@@ -28,63 +28,71 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     shadows : true,
     shouldAnimate : true
 });
+viewer.scene.sun = null;
+let scene = viewer.scene
+scene.highDynamicRange = true;
+var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 10);
+var url = '../../SampleData/models/jiangxi.gltf';
+// let url = '../../SampleData/models/BoomBox/scene.gltf'
+viewer.trackedEntity = viewer.entities.add({
+    name : url,
+    position,
+    model : {
+        uri : url,
+        color: new Cesium.Color(1., 1., 1., 1),
+        // scale : 40.0
+    }
+});
 
-function createModel(url, height) {
-    viewer.entities.removeAll();
+var z = 0
 
-    var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, height);
-    var heading = Cesium.Math.toRadians(135);
-    var pitch = 0;
-    var roll = 0;
-    var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-    var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
+// var blueBox = viewer.entities.add({
+//     name : 'Blue box',
+//     position:  Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
+//     box : {
+//         dimensions : new Cesium.Cartesian3(10.0, 10.0, 10.0),
+//         material : Cesium.Color.BLUE
+//     }
+// });
+var clock = viewer.clock;
+var lastUpdated = clock.currentTime;
+clock.onTick.addEventListener(function() {
+    var dt = Cesium.JulianDate.secondsDifference(clock.currentTime, lastUpdated);
+    if (dt >= 1) {
+        // Add a new sample position
+        lastUpdated = clock.currentTime;
+        // z++
+        // blueBox.position = new Cesium.Cartesian3(200,200,200)
+        // viewer.scene.lights[1].position = blueBox.position._value
+    }
+});
 
-    var entity = viewer.entities.add({
-        name : url,
-        position : position,
-        orientation : orientation,
-        model : {
-            uri : url,
-            minimumPixelSize : 128,
-            maximumScale : 20000
-        }
-    });
-    viewer.trackedEntity = entity;
-}
+scene.lights = [
+            {
+                type: 0, //directional
+                direction: new Cesium.Cartesian3(),
+                color: new Cesium.Color(10.3,3,6)
+            },
+            {
+                type: 1, //point
+                // position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
+                position: new Cesium.Cartesian3(37.5145034790039, 79.035301208496094, -18.98169994354248),
+                color: new Cesium.Color(10.3,3,6),
+                constant: 1,
+				linear: .09,
+				quadratic: .032
+            }
+        ]
 
-var options = [{
-    text : 'Aircraft',
-    onselect : function() {
-        createModel('../../SampleData/models/CesiumAir/Cesium_Air.glb', 5000.0);
-    }
-}, {
-    text : 'Ground Vehicle',
-    onselect : function() {
-        createModel('../../SampleData/models/GroundVehicle/GroundVehicle.glb', 0);
-    }
-}, {
-    text : 'Hot Air Balloon',
-    onselect : function() {
-        createModel('../../SampleData/models/CesiumBalloon/CesiumBalloon.glb', 1000.0);
-    }
-}, {
-    text : 'Milk Truck',
-    onselect : function() {
-        createModel('../../SampleData/models/CesiumMilkTruck/CesiumMilkTruck.glb', 0);
-    }
-}, {
-    text : 'Skinned Character',
-    onselect : function() {
-        createModel('../../SampleData/models/CesiumMan/Cesium_Man.glb', 0);
-    }
-}, {
-    text : 'Draco Compressed Model',
-    onselect : function() {
-        createModel('../../SampleData/models/DracoCompressed/CesiumMilkTruck.gltf', 0);
-    }
-}];
 
-Sandcastle.addToolbarMenu(options);
+let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+handler.setInputAction(function(movement) {
+    var pickedObject = scene.pick(movement.position);
+    if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity)
+        var cartesian = viewer.scene.pickPosition(movement.position);
+    console.log(cartesian)
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
 //Sandcastle_End
     Sandcastle.finishedLoading();
 }
