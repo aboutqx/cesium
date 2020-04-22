@@ -12,7 +12,7 @@ var request = require('request');
 
 var globby = require('globby');
 var gulpTap = require('gulp-tap');
-var gulpUglify = require('gulp-uglify');
+var gulpUglify = require('gulp-uglify-es').default;
 var open = require('open');
 var rimraf = require('rimraf');
 var glslStripComments = require('glsl-strip-comments');
@@ -32,7 +32,7 @@ var mime = require('mime');
 var rollup = require('rollup');
 var rollupPluginStripPragma = require('rollup-plugin-strip-pragma');
 var rollupPluginExternalGlobals = require('rollup-plugin-external-globals');
-var rollupPluginUglify = require('rollup-plugin-uglify');
+var rollupPluginTerser = require('rollup-plugin-terser');
 var cleanCSS = require('gulp-clean-css');
 
 var packageJson = require('./package.json');
@@ -991,7 +991,7 @@ function combineCesium(debug, optimizer, combineOutput) {
         }));
     }
     if (optimizer === 'uglify2') {
-        plugins.push(rollupPluginUglify.uglify());
+        plugins.push(rollupPluginTerser.terser());
     }
 
     return rollup.rollup({
@@ -1044,7 +1044,7 @@ function combineWorkers(debug, optimizer, combineOutput) {
                 }));
             }
             if (optimizer === 'uglify2') {
-                plugins.push(rollupPluginUglify.uglify());
+                plugins.push(rollupPluginTerser.terser());
             }
 
             return rollup.rollup({
@@ -1386,7 +1386,7 @@ function buildCesiumViewer() {
                 rollupPluginStripPragma({
                     pragmas: ['debug']
                 }),
-                rollupPluginUglify.uglify()
+                rollupPluginTerser.terser()
             ],
             onwarn: rollupWarning
         }).then(function(bundle) {
