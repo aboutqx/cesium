@@ -32,6 +32,7 @@ viewer.scene.sun = null;
 let scene = viewer.scene
 scene.highDynamicRange = true;
 var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 10);
+console.log(position)
 var url = '../../SampleData/models/jiangxi.gltf';
 // let url = '../../SampleData/models/BoomBox/scene.gltf'
 viewer.trackedEntity = viewer.entities.add({
@@ -76,8 +77,17 @@ scene.lights = [
             {
                 type: 1, //point
                 // position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
-                position: new Cesium.Cartesian3(37.5145034790039, 79.035301208496094, -18.98169994354248),
+                position: new Cesium.Cartesian3(-2505798.7200923045, -3847533.3249968663, 4412206.522487455),
                 color: new Cesium.Color(10.3,3,6),
+                constant: 1,
+				linear: .09,
+				quadratic: .032
+            },
+            {
+                type: 1, //point
+                // position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
+                position: new Cesium.Cartesian3(-2505798.7200923045, -3847533.3249968663, 4412206.522487455),
+                color: new Cesium.Color(.3,10.3,6),
                 constant: 1,
 				linear: .09,
 				quadratic: .032
@@ -88,10 +98,14 @@ scene.lights = [
 let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
 handler.setInputAction(function(movement) {
     var pickedObject = scene.pick(movement.position);
-    if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity)
-        var cartesian = viewer.scene.pickPosition(movement.position);
-    console.log(cartesian)
+    if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity){
+        var cartesian = viewer.scene.pickPositionWorldCoordinates(movement.position);
+        scene.lights[1].position = cartesian
+    }
+
+
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
 
 //Sandcastle_End
     Sandcastle.finishedLoading();

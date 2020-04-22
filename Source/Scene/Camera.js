@@ -1850,7 +1850,6 @@ import SceneMode from './SceneMode.js';
 
     function zoom3D(camera, amount) {
         camera.move(camera.direction, amount);
-        console.log(camera.direction, amount)
     }
 
     /**

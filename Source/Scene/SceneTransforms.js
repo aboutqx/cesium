@@ -322,10 +322,16 @@ import SceneMode from './SceneMode.js';
             worldCoords = Matrix4.multiplyByVector(uniformState.inverseView, worldCoords, worldCoords);
         } else {
             worldCoords = Matrix4.multiplyByVector(uniformState.inverseViewProjection, ndc, scratchWorldCoords);
+            // let t = new Cartesian4()
+            // Matrix4.multiplyByVector(uniformState.inverseModel, worldCoords, t)
+
+            // Cartesian3.multiplyByScalar(t, 1/ t.w, t);
+
 
             // Reverse perspective divide
             var w = 1.0 / worldCoords.w;
             Cartesian3.multiplyByScalar(worldCoords, w, worldCoords);
+            // console.log([t.x, t.y, t.z],[worldCoords.x, worldCoords.y,worldCoords.z])
         }
         return Cartesian3.fromCartesian4(worldCoords, result);
     };

@@ -1929,7 +1929,7 @@ import WebGLConstants from '../Core/WebGLConstants.js';
                     if(prop === 'positionEC' && uniformState.lights[i].position) {
                         let t = new Cartesian4()
                         let lightPos = uniformState.lights[i].position
-                        Matrix4.multiplyByVector(uniformState.modelView, new Cartesian4(lightPos.x, lightPos.y,lightPos.z,1), t);
+                        Matrix4.multiplyByVector(uniformState.view, new Cartesian4(lightPos.x, lightPos.y,lightPos.z,1), t);
                         uniformState.lights[i].positionEC = new Cartesian3(t.x, t.y, t.z)
                         return uniformState.lights[i].positionEC
                     } else return uniformState.lights[i][prop];

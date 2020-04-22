@@ -222,3 +222,6 @@ Material createUnifrom: if (uniformType === 'sampler2D') {
 uniformState.updateCamera #设置camera的position和三个向量
 
 Model.createVertexBuffer #创建position，normal等的buffer
+
+SceneTransforms.drawingBufferToWgs84Coordinates里调用时uniformState.inverseModel，这个inverseModel竟然时identity，导致设置model的position时位移的上万的坐标无法还原成position。
+结果智能用移动后的坐标作为light的position，计算时乘以view，不再是modelView

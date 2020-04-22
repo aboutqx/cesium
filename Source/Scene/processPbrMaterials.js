@@ -871,10 +871,16 @@ import ModelUtility from './ModelUtility.js';
         fragmentShader += `
             #ifdef HAS_SCENE_LIGHTS
                 vec3 finalColor;
-                vec3 pos = czm_lights[1].positionEC;
-                float distance = length( pos - v_positionEC) ;
-                float attenuation = 1.0 / (czm_lights[1].constant + czm_lights[1].linear * distance + czm_lights[1].quadratic * distance * distance);
-                finalColor = czm_lights[1].color * attenuation;
+                for(int i=0; i<10; i++ ) {
+                    if(czm_lights[i].type == 1) {
+                        vec3 pos = czm_lights[i].positionEC;
+                        float distance = length( pos - v_positionEC) ;
+                        float attenuation = 1.0 / (czm_lights[i].constant + czm_lights[i].linear * distance + czm_lights[i].quadratic * distance * distance);
+                        finalColor += czm_lights[i].color * attenuation;
+                    }
+
+                }
+
                 gl_FragColor = vec4(vec3(finalColor), 1.);
             #endif
             `
