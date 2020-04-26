@@ -1,5 +1,7 @@
 ﻿终极奥义： 查找 new ShaderProgram进行debug，这个是只在ShaderCache里出现一次的，依此被每个渲染物体的update方法调用，而且能看到vertex和fragment代码
 
+3dtiles 的shader直接写在了CesiumdTileBatchTable里面了
+
 Example Library for cesium：
 
 https://github.com/MikesWei/CesiumMeshVisualizer

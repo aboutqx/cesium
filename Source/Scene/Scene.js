@@ -73,7 +73,6 @@ import SunLight from './SunLight.js';
 import SunPostProcess from './SunPostProcess.js';
 import TweenCollection from './TweenCollection.js';
 import View from './View.js';
-import AutomaticUniforms from '../renderer/AutomaticUniforms.js';
 
     var requestRenderAfterFrame = function (scene) {
         return function () {

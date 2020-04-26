@@ -28,23 +28,30 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     shadows : true,
     shouldAnimate : true
 });
-viewer.scene.sun = null;
-let scene = viewer.scene
-scene.highDynamicRange = true;
-var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 10);
-console.log(position)
-var url = '../../SampleData/models/jiangxi.gltf';
-// let url = '../../SampleData/models/BoomBox/scene.gltf'
-viewer.trackedEntity = viewer.entities.add({
-    name : url,
-    position,
-    model : {
-        uri : url,
-        color: new Cesium.Color(1., 1., 1., 1),
-        // scale : 40.0
-    }
-});
 
+const scene = viewer.scene
+scene.sun = null
+scene.highDynamicRange = true;
+var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 0);
+
+const url = '../../SampleData/models/jiangxi.gltf';
+// const url = '../../SampleData/models/BoomBox/scene.gltf'
+// const url = '../../SampleData/models/CesiumAir/Cesium_Air.glb'
+// viewer.trackedEntity = viewer.entities.add({
+//     name : url,
+//     position,
+//     model : {
+//         uri : url,
+//         color: new Cesium.Color(1., 1., 1., 1),
+//         // scale : 40.0
+//     }
+// });
+
+const path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/tileset.json'
+var tileset2 = new Cesium.Cesium3DTileset({ url: path });
+
+viewer.scene.primitives.add(tileset2);
+viewer.zoomTo(tileset2)
 var z = 0
 
 // var blueBox = viewer.entities.add({
@@ -59,25 +66,22 @@ var clock = viewer.clock;
 var lastUpdated = clock.currentTime;
 clock.onTick.addEventListener(function() {
     var dt = Cesium.JulianDate.secondsDifference(clock.currentTime, lastUpdated);
-    if (dt >= 1) {
+    if (dt >= .1) {
         // Add a new sample position
         lastUpdated = clock.currentTime;
-        // z++
-        // blueBox.position = new Cesium.Cartesian3(200,200,200)
-        // viewer.scene.lights[1].position = blueBox.position._value
+        // scene.lights[0].direction = scene.camera.directionWC
     }
 });
 
 scene.lights = [
             {
                 type: 0, //directional
-                direction: new Cesium.Cartesian3(),
-                color: new Cesium.Color(10.3,3,6)
+                direction: new Cesium.Cartesian3(0,1,0),
+                color: new Cesium.Color(.2,.2,.2)
             },
             {
                 type: 1, //point
-                // position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
-                position: new Cesium.Cartesian3(-2505798.7200923045, -3847533.3249968663, 4412206.522487455),
+                position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
                 color: new Cesium.Color(10.3,3,6),
                 constant: 1,
 				linear: .09,
@@ -85,9 +89,8 @@ scene.lights = [
             },
             {
                 type: 1, //point
-                // position: Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, z),
-                position: new Cesium.Cartesian3(-2505798.7200923045, -3847533.3249968663, 4412206.522487455),
-                color: new Cesium.Color(.3,10.3,6),
+                position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
+                color: new Cesium.Color(.3,1.3,3),
                 constant: 1,
 				linear: .09,
 				quadratic: .032
@@ -100,6 +103,7 @@ handler.setInputAction(function(movement) {
     var pickedObject = scene.pick(movement.position);
     if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity){
         var cartesian = viewer.scene.pickPositionWorldCoordinates(movement.position);
+        console.log(cartesian.x,',',cartesian.y, ',', cartesian.z)
         scene.lights[1].position = cartesian
     }
 

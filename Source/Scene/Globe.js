@@ -803,7 +803,7 @@ import ShadowMode from './ShadowMode.js';
             this._material.update(frameState.context);
         }
 
-        //  this._surface.render(frameState);
+        //this._surface.render(frameState);
     };
 
     /**

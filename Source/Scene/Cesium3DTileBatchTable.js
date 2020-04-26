@@ -30,6 +30,8 @@ import getBinaryAccessor from './getBinaryAccessor.js';
 import StencilConstants from './StencilConstants.js';
 import StencilFunction from './StencilFunction.js';
 import StencilOperation from './StencilOperation.js';
+import AutomaticUniforms from '../renderer/AutomaticUniforms.js';
+import solarRadius from '../Shaders/Builtin/Constants/solarRadius.js';
 
     var DEFAULT_COLOR_VALUE = Color.WHITE;
     var DEFAULT_SHOW_VALUE = true;
@@ -919,16 +921,33 @@ import StencilOperation from './StencilOperation.js';
 
         // The color blend mode is intended for the RGB channels so alpha is always just multiplied.
         // gl_FragColor is multiplied by the tile color only when tile_colorBlend is 0.0 (highlight)
-        return source +
-               'uniform float tile_colorBlend; \n' +
-               'void tile_color(vec4 tile_featureColor) \n' +
-               '{ \n' +
-               '    tile_main(); \n' +
-               '    tile_featureColor = czm_gammaCorrect(tile_featureColor); \n' +
-               '    gl_FragColor.a *= tile_featureColor.a; \n' +
-               '    float highlight = ceil(tile_colorBlend); \n' +
-               '    gl_FragColor.rgb *= mix(tile_featureColor.rgb, vec3(1.0), highlight); \n' +
-               '} \n';
+
+        source+=
+               `uniform float tile_colorBlend;
+               void tile_color(vec4 tile_featureColor)
+               {
+                   tile_main();
+                   tile_featureColor = czm_gammaCorrect(tile_featureColor);
+                   gl_FragColor.a *= tile_featureColor.a;
+                   float highlight = ceil(tile_colorBlend);
+                   gl_FragColor.rgb *= mix(tile_featureColor.rgb, vec3(1.0), highlight);
+
+                   vec3 finalColor;
+                   for(int i=0; i<10; i++ ) {
+                       if(czm_lights[i].type == 1) {
+                           vec3 pos = czm_lights[i].positionEC;
+                           float distance = length( pos - v_pos) ;
+                           float attenuation = 1.0 / (czm_lights[i].constant + czm_lights[i].linear * distance + czm_lights[i].quadratic * distance * distance);
+                           finalColor += czm_lights[i].color * attenuation;
+                       } else if(czm_lights[i].type == 0){
+                           finalColor += czm_lights[i].color;
+                       }
+                   }
+                   gl_FragColor.rgb = finalColor;
+               }
+               `
+        return source;
+
     }
 
     function replaceDiffuseTextureCalls(source, diffuseAttributeOrUniformName) {
@@ -1005,11 +1024,12 @@ import StencilOperation from './StencilOperation.js';
 
         // The color blend mode is intended for the RGB channels so alpha is always just multiplied.
         // gl_FragColor is multiplied by the tile color only when tile_colorBlend is 0.0 (highlight)
-        var highlight =
-            '    tile_featureColor = czm_gammaCorrect(tile_featureColor); \n' +
-            '    gl_FragColor.a *= tile_featureColor.a; \n' +
-            '    float highlight = ceil(tile_colorBlend); \n' +
-            '    gl_FragColor.rgb *= mix(tile_featureColor.rgb, vec3(1.0), highlight); \n';
+        var highlight =`
+                tile_featureColor = czm_gammaCorrect(tile_featureColor);
+                gl_FragColor.a *= tile_featureColor.a;
+                float highlight = ceil(tile_colorBlend);
+                gl_FragColor.rgb *= mix(tile_featureColor.rgb, vec3(1.0), highlight);
+            `
 
         var setColor;
         if (type === 'vec3' || type === 'vec4') {
@@ -1046,6 +1066,7 @@ import StencilOperation from './StencilOperation.js';
         }
 
         source += '} \n';
+        console.log(source)
         return source;
     }
 

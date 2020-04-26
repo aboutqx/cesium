@@ -1,5 +1,6 @@
 import Cartesian3 from '../Core/Cartesian3.js';
 import Cartesian4 from '../Core/Cartesian4.js';
+import Matrix3 from '../Core/Matrix3.js';
 import Matrix4 from '../Core/Matrix4.js';
 import WebGLConstants from '../Core/WebGLConstants.js';
 
@@ -1917,6 +1918,7 @@ import WebGLConstants from '../Core/WebGLConstants.js';
             struct: {
                 type: 'int', //point
                 positionEC: 'vec3',
+                directionEC: 'vec3',
                 color: 'vec3',
                 constant: 'float',
 				linear: 'float',
@@ -1928,11 +1930,19 @@ import WebGLConstants from '../Core/WebGLConstants.js';
                 else {
                     if(prop === 'positionEC' && uniformState.lights[i].position) {
                         let t = new Cartesian4()
-                        let lightPos = uniformState.lights[i].position
+                        const lightPos = uniformState.lights[i].position
                         Matrix4.multiplyByVector(uniformState.view, new Cartesian4(lightPos.x, lightPos.y,lightPos.z,1), t);
                         uniformState.lights[i].positionEC = new Cartesian3(t.x, t.y, t.z)
                         return uniformState.lights[i].positionEC
-                    } else return uniformState.lights[i][prop];
+                    } else if(prop === 'directionEC' && uniformState.lights[i].direction){
+                        uniformState.lights[i].directionWC = new Cartesian3();
+                        uniformState.lights[i].directionEC = new Cartesian3();
+                        uniformState.lights[i].directionWC = Cartesian3.normalize(Cartesian3.negate(uniformState.lights[i].direction, uniformState.lights[i].directionWC), uniformState.lights[i].directionWC);
+                        uniformState.lights[i].directionEC = Matrix3.multiplyByVector(uniformState.viewRotation3D, uniformState.lights[i].directionWC, uniformState.lights[i].directionEC);
+                        return uniformState.lights[i].directionEC
+                    } else {
+                        return uniformState.lights[i][prop];
+                    }
                 }
             }
         })
