@@ -2521,11 +2521,7 @@ import View from './View.js';
                 var flipCamera = Camera.clone(camera);
 
                 // flipCamera.position.y = -flipCamera.position.y
-                // // flipCamera.direction.y = -flipCamera.direction.y
                 // flipCamera.up.y = -flipCamera.up.y
-                // flipCamera.direction
-
-
 
                 us.updateCamera(flipCamera);
 

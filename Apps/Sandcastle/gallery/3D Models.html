@@ -47,8 +47,8 @@ const url = '../../SampleData/models/jiangxi.gltf';
 //     }
 // });
 
-const path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/tileset.json'
-var tileset2 = new Cesium.Cesium3DTileset({ url: path });
+const path = '../../SampleData/Cesium3DTiles/Tilesets/Private/3dtiles/tileset.json'
+const tileset2 = new Cesium.Cesium3DTileset({ url: path });
 
 viewer.scene.primitives.add(tileset2);
 viewer.zoomTo(tileset2)
@@ -74,28 +74,28 @@ clock.onTick.addEventListener(function() {
 });
 
 scene.lights = [
-            {
-                type: 0, //directional
-                direction: new Cesium.Cartesian3(0,1,0),
-                color: new Cesium.Color(.2,.2,.2)
-            },
-            {
-                type: 1, //point
-                position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
-                color: new Cesium.Color(10.3,3,6),
-                constant: 1,
-				linear: .09,
-				quadratic: .032
-            },
-            {
-                type: 1, //point
-                position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
-                color: new Cesium.Color(.3,1.3,3),
-                constant: 1,
-				linear: .09,
-				quadratic: .032
-            }
-        ]
+    {
+        type: 0, //directional
+        direction: new Cesium.Cartesian3(0,1,0),
+        color: new Cesium.Color(.1,.1,.1)
+    },
+    {
+        type: 1, //point
+        position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
+        color: new Cesium.Color(3,13,3),
+        constant: 1,
+        linear: .09,
+        quadratic: .032
+    },
+    {
+        type: 1, //point
+        position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
+        color: new Cesium.Color(10.3,3,6),
+        constant: 1,
+        linear: .09,
+        quadratic: .032
+    }
+]
 
 
 let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
@@ -104,7 +104,7 @@ handler.setInputAction(function(movement) {
     if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity){
         var cartesian = viewer.scene.pickPositionWorldCoordinates(movement.position);
         console.log(cartesian.x,',',cartesian.y, ',', cartesian.z)
-        scene.lights[1].position = cartesian
+        scene.lights[2].position = cartesian
     }
 
 

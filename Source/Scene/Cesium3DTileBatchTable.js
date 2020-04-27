@@ -30,8 +30,6 @@ import getBinaryAccessor from './getBinaryAccessor.js';
 import StencilConstants from './StencilConstants.js';
 import StencilFunction from './StencilFunction.js';
 import StencilOperation from './StencilOperation.js';
-import AutomaticUniforms from '../renderer/AutomaticUniforms.js';
-import solarRadius from '../Shaders/Builtin/Constants/solarRadius.js';
 
     var DEFAULT_COLOR_VALUE = Color.WHITE;
     var DEFAULT_SHOW_VALUE = true;
@@ -943,7 +941,9 @@ import solarRadius from '../Shaders/Builtin/Constants/solarRadius.js';
                            finalColor += czm_lights[i].color;
                        }
                    }
-                   gl_FragColor.rgb = finalColor;
+
+                   gl_FragColor.rgb *= finalColor;
+
                }
                `
         return source;
