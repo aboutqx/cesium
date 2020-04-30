@@ -522,16 +522,15 @@ import ModelUtility from './ModelUtility.js';
             '    return vec4(linearOut, srgbIn.a);\n' +
             '}\n\n';
 
-        fragmentShader +=`
-            vec3 applyTonemapping(vec3 linearIn)
-            {
-            #ifndef HDR
-                return czm_acesTonemapping(linearIn);
-            #else
-                return linearIn;
-            #endif
-            }
-            `
+        fragmentShader +=
+            'vec3 applyTonemapping(vec3 linearIn) \n' +
+            '{\n' +
+            '#ifndef HDR \n' +
+            '    return czm_acesTonemapping(linearIn);\n' +
+            '#else \n' +
+            '    return linearIn;\n' +
+            '#endif \n' +
+            '}\n\n';
 
         fragmentShader +=
             'vec3 LINEARtoSRGB(vec3 linearIn) \n' +
