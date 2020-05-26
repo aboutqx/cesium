@@ -767,7 +767,8 @@ PostProcessStageLibrary.createFilmicTonemappingStage = function(useAutoExposure)
     fragmentShader: fs,
     uniforms: {
       autoExposure: undefined
-    }
+    },
+    pixelDatatype: PixelDatatype.HALF_FLOAT
   });
 };
 
@@ -785,7 +786,8 @@ PostProcessStageLibrary.createReinhardTonemappingStage = function(useAutoExposur
     fragmentShader: fs,
     uniforms: {
       autoExposure: undefined
-    }
+    },
+    pixelDatatype: PixelDatatype.HALF_FLOAT
   });
 };
 
@@ -804,7 +806,8 @@ PostProcessStageLibrary.createModifiedReinhardTonemappingStage = function(useAut
     uniforms: {
       white: Color.WHITE,
       autoExposure: undefined
-    }
+    },
+    pixelDatatype: PixelDatatype.HALF_FLOAT
   });
 };
 

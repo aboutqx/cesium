@@ -762,6 +762,8 @@ PostProcessStageCollection.prototype.execute = function (
   var autoExposureEnabled = this._autoExposureEnabled;
   var tonemappingEnabled =
     tonemapping.enabled && tonemapping._isSupported(context);
+
+  if(Object.keys(this._stageNames).includes('partial_bloom')) tonemappingEnabled = false
   var fxaaEnabled = fxaa.enabled && fxaa._isSupported(context);
 
   if (

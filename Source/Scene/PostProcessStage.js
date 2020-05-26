@@ -124,6 +124,10 @@ function PostProcessStage(options) {
     options.pixelDatatype,
     PixelDatatype.UNSIGNED_BYTE
   );
+  if (options.name === 'bloom_threshold' || options.name == 'czm_partial_bloom_blur_x_direction'
+    || options.name == 'czm_partial_bloom_blur_y_direction' || options.name == 'czm_partial_bloom_generate_composite') {
+    this._pixelDatatype = PixelDatatype.HALF_FLOAT
+  }
   this._clearColor = defaultValue(options.clearColor, Color.BLACK);
 
   this._uniformMap = undefined;
@@ -194,7 +198,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   ready: {
-    get: function () {
+    get: function() {
       return this._ready;
     },
   },
@@ -206,7 +210,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   name: {
-    get: function () {
+    get: function() {
       return this._name;
     },
   },
@@ -226,7 +230,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   fragmentShader: {
-    get: function () {
+    get: function() {
       return this._fragmentShader;
     },
   },
@@ -249,7 +253,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   uniforms: {
-    get: function () {
+    get: function() {
       return this._uniforms;
     },
   },
@@ -261,7 +265,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   textureScale: {
-    get: function () {
+    get: function() {
       return this._textureScale;
     },
   },
@@ -273,7 +277,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   forcePowerOfTwo: {
-    get: function () {
+    get: function() {
       return this._forcePowerOfTwo;
     },
   },
@@ -285,7 +289,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   sampleMode: {
-    get: function () {
+    get: function() {
       return this._sampleMode;
     },
   },
@@ -297,7 +301,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   pixelFormat: {
-    get: function () {
+    get: function() {
       return this._pixelFormat;
     },
   },
@@ -309,7 +313,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   pixelDatatype: {
-    get: function () {
+    get: function() {
       return this._pixelDatatype;
     },
   },
@@ -321,7 +325,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   clearColor: {
-    get: function () {
+    get: function() {
       return this._clearColor;
     },
   },
@@ -333,7 +337,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @readonly
    */
   scissorRectangle: {
-    get: function () {
+    get: function() {
       return this._passState.scissorTest.rectangle;
     },
   },
@@ -346,7 +350,7 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @private
    */
   outputTexture: {
-    get: function () {
+    get: function() {
       if (defined(this._textureCache)) {
         var framebuffer = this._textureCache.getFramebuffer(this._name);
         if (defined(framebuffer)) {
@@ -374,10 +378,10 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @type {Array}
    */
   selected: {
-    get: function () {
+    get: function() {
       return this._selected;
     },
-    set: function (value) {
+    set: function(value) {
       this._selected = value;
     },
   },
@@ -385,10 +389,10 @@ Object.defineProperties(PostProcessStage.prototype, {
    * @private
    */
   parentSelected: {
-    get: function () {
+    get: function() {
       return this._parentSelected;
     },
-    set: function (value) {
+    set: function(value) {
       this._parentSelected = value;
     },
   },
@@ -399,7 +403,7 @@ var depthTextureRegex = /uniform\s+sampler2D\s+depthTexture/g;
 /**
  * @private
  */
-PostProcessStage.prototype._isSupported = function (context) {
+PostProcessStage.prototype._isSupported = function(context) {
   return !depthTextureRegex.test(this._fragmentShader) || context.depthTexture;
 };
 
@@ -416,10 +420,10 @@ function getUniformValueGetterAndSetter(stage, uniforms, name) {
   }
 
   return {
-    get: function () {
+    get: function() {
       return uniforms[name];
     },
-    set: function (value) {
+    set: function(value) {
       var currentValue = uniforms[name];
       uniforms[name] = value;
 
@@ -456,7 +460,7 @@ function getUniformValueGetterAndSetter(stage, uniforms, name) {
 }
 
 function getUniformMapFunction(stage, name) {
-  return function () {
+  return function() {
     var value = stage._actualUniforms[name];
     if (typeof value === "function") {
       return value();
@@ -466,7 +470,7 @@ function getUniformMapFunction(stage, name) {
 }
 
 function getUniformMapDimensionsFunction(uniformMap, name) {
-  return function () {
+  return function() {
     var texture = uniformMap[name]();
     if (defined(texture)) {
       return texture.dimensions;
@@ -520,25 +524,25 @@ function createUniformMap(stage) {
   Object.defineProperties(stage._uniforms, newUniforms);
 
   stage._uniformMap = combine(uniformMap, {
-    colorTexture: function () {
+    colorTexture: function() {
       return stage._colorTexture;
     },
-    colorTextureDimensions: function () {
+    colorTextureDimensions: function() {
       return stage._colorTexture.dimensions;
     },
-    depthTexture: function () {
+    depthTexture: function() {
       return stage._depthTexture;
     },
-    depthTextureDimensions: function () {
+    depthTextureDimensions: function() {
       return stage._depthTexture.dimensions;
     },
-    czm_idTexture: function () {
+    czm_idTexture: function() {
       return stage._idTexture;
     },
-    czm_selectedIdTexture: function () {
+    czm_selectedIdTexture: function() {
       return stage._selectedIdTexture;
     },
-    czm_selectedIdTextureStep: function () {
+    czm_selectedIdTextureStep: function() {
       return 1.0 / stage._selectedIdTexture.width;
     },
   });
@@ -627,7 +631,7 @@ function createSampler(stage) {
 }
 
 function createLoadImageFunction(stage, name) {
-  return function (image) {
+  return function(image) {
     stage._texturesToCreate.push({
       name: name,
       source: image,
@@ -636,7 +640,7 @@ function createLoadImageFunction(stage, name) {
 }
 
 function createStageOutputTextureFunction(stage, name) {
-  return function () {
+  return function() {
     return stage._textureCache.getOutputTexture(name);
   };
 }
@@ -709,7 +713,7 @@ function updateUniformTextures(stage, context) {
 
   if (promises.length > 0) {
     stage._ready = false;
-    stage._texturePromise = when.all(promises).then(function () {
+    stage._texturePromise = when.all(promises).then(function() {
       stage._ready = true;
       stage._texturePromise = undefined;
     });
@@ -876,7 +880,7 @@ function createSelectedTexture(stage, context) {
  * @param {Boolean} useLogDepth Whether the scene uses a logarithmic depth buffer.
  * @private
  */
-PostProcessStage.prototype.update = function (context, useLogDepth) {
+PostProcessStage.prototype.update = function(context, useLogDepth) {
   if (this.enabled !== this._enabled && !this.enabled) {
     releaseResources(this);
   }
@@ -952,7 +956,7 @@ PostProcessStage.prototype.update = function (context, useLogDepth) {
  * @param {Texture} idTexture The id texture.
  * @private
  */
-PostProcessStage.prototype.execute = function (
+PostProcessStage.prototype.execute = function(
   context,
   colorTexture,
   depthTexture,
@@ -997,7 +1001,7 @@ PostProcessStage.prototype.execute = function (
  *
  * @see PostProcessStage#destroy
  */
-PostProcessStage.prototype.isDestroyed = function () {
+PostProcessStage.prototype.isDestroyed = function() {
   return false;
 };
 
@@ -1014,7 +1018,7 @@ PostProcessStage.prototype.isDestroyed = function () {
  *
  * @see PostProcessStage#isDestroyed
  */
-PostProcessStage.prototype.destroy = function () {
+PostProcessStage.prototype.destroy = function() {
   releaseResources(this);
   return destroyObject(this);
 };

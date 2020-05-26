@@ -1,48 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
-    <meta
-      name="description"
-      content="Use Viewer to start building new applications or easily embed Cesium into existing applications."
-    />
-    <meta name="cesium-sandcastle-labels" content="Beginner, Showcases" />
-    <title>Cesium Demo</title>
-    <script type="text/javascript" src="../Sandcastle-header.js"></script>
-    <script
-      type="text/javascript"
-      src="../../../Build/CesiumUnminified/Cesium.js"
-      nomodule
-    ></script>
-    <script type="module" src="../load-cesium-es6.js"></script>
-  </head>
-  <body
-    class="sandcastle-loading"
-    data-sandcastle-bucket="bucket-requirejs.html"
-  >
-    <style>
-      @import url(../templates/bucket.css);
-    </style>
-    <div id="cesiumContainer" class="fullSize"></div>
-    <div id="loadingOverlay"><h1>Loading...</h1></div>
-    <div id="toolbar"></div>
-    <script id="cesium_sandcastle_script">
-      function startup(Cesium) {
-        "use strict";
-        //Sandcastle_Begin
-        var viewer = new Cesium.Viewer("cesiumContainer");
-        //Sandcastle_End
-        Sandcastle.finishedLoading();
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <meta name="description"
+    content="Use Viewer to start building new applications or easily embed Cesium into existing applications." />
+  <meta name="cesium-sandcastle-labels" content="Beginner, Showcases" />
+  <title>Cesium Demo</title>
+  <script type="text/javascript" src="../Sandcastle-header.js"></script>
+  <script type="text/javascript" src="../../../Build/CesiumUnminified/Cesium.js" nomodule></script>
+  <script type="module" src="../load-cesium-es6.js"></script>
+</head>
+
+<body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+  <style>
+    @import url(../templates/bucket.css);
+  </style>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <div id="loadingOverlay">
+    <h1>Loading...</h1>
+  </div>
+  <div id="toolbar">
+    <input type="range" min="1." max="2.0" step="0.01" data-bind="value: alpha, valueUpdate: 'input'" />
+    <input type="range" min="1." max="5.0" step="0.1" data-bind="value: offset, valueUpdate: 'input'" />
+  </div>
+  <script id="cesium_sandcastle_script">
+    function startup(Cesium) {
+      "use strict";
+      //Sandcastle_Begin
+      const viewer = new Cesium.Viewer("cesiumContainer");
+      var viewModel = {
+
+        alpha: 1.6,
+        offset: 3.
+      };
+      Cesium.knockout.track(viewModel);
+      var toolbar = document.getElementById('toolbar');
+      Cesium.knockout.applyBindings(viewModel, toolbar);
+      for (var name in viewModel) {
+        if (viewModel.hasOwnProperty(name)) {
+          Cesium.knockout.getObservable(viewModel, name).subscribe(updatePostProcess);
+        }
       }
-      if (typeof Cesium !== "undefined") {
-        window.startupCalled = true;
-        startup(Cesium);
+      const fragmentShader = `uniform float offset;
+      uniform float darkness;
+
+      uniform sampler2D colorTexture;
+
+      varying vec2 v_textureCoordinates;
+
+      void main() {
+
+        // Eskil's vignette
+
+        vec4 texel = texture2D( colorTexture, v_textureCoordinates );
+        vec2 uv = ( v_textureCoordinates - vec2( 0.5 ) ) * vec2( offset );
+        gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a );
+
+        /*
+        // alternative version from glfx.js
+        // this one makes more "dusty" look (as opposed to "burned")
+
+        vec4 color = texture2D( colorTexture, v_textureCoordinates );
+        float dist = distance( v_textureCoordinates, vec2( 0.5 ) );
+        color.rgb *= smoothstep( 0.8, offset * 0.799, dist *( darkness + offset ) );
+        gl_FragColor = color;
+        */
+
+      }`
+      const postProcessStage = viewer.scene.postProcessStages.add(
+        new Cesium.PostProcessStage({
+          fragmentShader: fragmentShader,
+          uniforms: {
+            darkness: 1.6,
+            offset: 3,
+          },
+        })
+      );
+      function updatePostProcess() {
+        postProcessStage.uniforms.darkness = Number(viewModel.alpha)
+        postProcessStage.uniforms.offset = Number(viewModel.offset)
       }
-    </script>
-  </body>
+
+      //Sandcastle_End
+      Sandcastle.finishedLoading();
+    }
+    if (typeof Cesium !== "undefined") {
+      window.startupCalled = true;
+      startup(Cesium);
+    }
+  </script>
+</body>
+
 </html>

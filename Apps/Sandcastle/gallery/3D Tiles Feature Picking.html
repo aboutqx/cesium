@@ -69,47 +69,43 @@
             //Sandcastle_Begin
             // A simple demo of 3D Tiles feature picking with hover and select behavior
             // Building data courtesy of NYC OpenData portal: http://www1.nyc.gov/site/doitt/initiatives/3d-building.page
-            var viewer = new Cesium.Viewer('cesiumContainer', {});
-            var path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/CH/tileset.json'
-            // var path = '../../SampleData/Cesium3DTiles/Tilesets/3dtiles/JZ/1/SW/tileset.json'
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                shouldAnimate: true,
+            });
             var scene = viewer.scene
+            const baseUrl = '../../SampleData/Cesium3DTiles/Tilesets/Private'
 
-            var tileset = new Cesium.Cesium3DTileset({ url: path });
-            viewer.zoomTo(tileset)
-            path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/JZ/tileset.json'
-            var tileset1 = new Cesium.Cesium3DTileset({ url: path });
+            const addTile = (path, color = 'rgba(7000,7000,7000,7000)', zoomTo = false) => {
+                path = baseUrl+'/dahua/'  +path
+                const tileset = new Cesium.Cesium3DTileset({ url: path });
+                tileset.style = new Cesium.Cesium3DTileStyle({
+                    color
+                });
+                viewer.scene.primitives.add(tileset)
 
-            // tileset.lightColor  = Cesium.Cartesian3.fromArray([299999.4,2.6,2.6])
-            tileset.style = new Cesium.Cesium3DTileStyle({
-                color: 'rgba(7000,7000,7000,7000)'
-            });
-            viewer.scene.primitives.add(tileset);
-            tileset1.style = new Cesium.Cesium3DTileStyle({
-                color: 'rgba(100.3,100.3,100.6,.5)'
-            });
-            viewer.scene.primitives.add(tileset1);
-            path = '../../SampleData/Cesium3DTiles/Tilesets/JZHL/LK/tileset.json'
-            var tileset2 = new Cesium.Cesium3DTileset({ url: path });
-            tileset2.style = new Cesium.Cesium3DTileStyle({
-                color: 'rgba(111,111,28898,10000)'
-            });
-            viewer.scene.primitives.add(tileset2);
-            // tileset.readyPromise.then(function(){
-            //     var boundingSphere = tileset.boundingSphere;
-            //     viewer.camera.viewBoundingSphere(boundingSphere, new Cesium.HeadingPitchRange(0.0, -0.5, boundingSphere.radius + 500.0));
-            //     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+                if(zoomTo) viewer.zoomTo(tileset)
+                return tileset
+            }
 
-            // });
-            // function setTime(iso8601) {
-            //     var currentTime = Cesium.JulianDate.fromIso8601(iso8601);
-            //     var endTime = Cesium.JulianDate.addDays(currentTime, 2, new Cesium.JulianDate());
+            const tileset = addTile('DX/tileset.json', 'rgba(700,700,700,700)')
 
-            //     viewer.clock.currentTime = currentTime;
-            //     viewer.timeline.zoomTo(currentTime, endTime);
-            // }
-            // scene.globe.enableLighting = true;
-            // scene.globe.dynamicAtmosphereLightingFromSun = true;
-            // setTime('2020-01-10T05:29:41.17946898164518643Z');
+            addTile('SWJZ/tileset.json')
+            
+            for(let i = 1; i < 7; i++){
+                addTile(`JZ/${i}/F1/tileset.json`)
+            }
+
+            addTile(`XP/XP/tileset.json`)
+            addTile(`XP/qiche/tileset.json`)
+            addTile(`XP/shiwaitingchewei/tileset.json`)
+            addTile(`XP/shiwaiyouchetingchewei/tileset.json`)
+            
+            addTile(`LK/suoyou/tileset.json`,'rgba(10,770,770,7)', true)
+            addTile(`LK/jianzhu/tileset.json`,'rgba(7000,1000,70000,1000)', true)
+            addTile(`LK/luya/tileset.json`,'rgba(7000,1000,7000,7000)')
+            addTile(`LK/pudi/tileset.json`,'rgba(7000,1000,7000,7000)')
+            
+
             var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 0);
             var url = '../../SampleData/models/jiangxi.glb';
             // viewer.trackedEntity = viewer.entities.add({
@@ -218,7 +214,6 @@
                         if (!tileset.loaded) {
                             getContents(tileset.root)
                             PartialBloom.partialBloom.selected = PartialBloom.contents
-                            console.log(PartialBloom.contents)
                             tileset.loaded = true
                         }
 
@@ -228,7 +223,7 @@
                 }
             }
             // PartialBloom.bloom(viewer.trackedEntity, viewer.scene)
-            PartialBloom.bloom(tileset, viewer.scene)
+            PartialBloom.bloom('tileset', viewer.scene)
 
             function updatePostProcess() {
                 PartialBloom.partialBloom.enabled = Boolean(viewModel.show);
@@ -242,22 +237,6 @@
             viewer.scene.postProcessStages.fxaa.enabled = true;
             // tileset.allTilesLoaded.addEventListener(addRect);
 
-//x: -2505695.8803171427, y: -3847568.0983392517, z: 4412222.415356382
-            let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-            handler.setInputAction(function(movement) {
-
-                var foundPosition = false;
-
-                var scene = viewer.scene;
-                if (scene.mode !== Cesium.SceneMode.MORPHING) {
-                    var pickedObject = scene.pick(movement.endPosition);
-                    if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity) {
-                        var cartesian = viewer.scene.pickPosition(movement.endPosition);
-                        console.log(cartesian)
-                    }
-                }
-
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             function addRect() {
                 viewer.scene.usePartial = true

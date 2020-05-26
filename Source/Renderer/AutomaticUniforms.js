@@ -1925,7 +1925,7 @@ var AutomaticUniforms = {
 			quadratic: 'float'
 		},
 		getValue: function(uniformState, i, prop) {
-			if (!uniformState.lights[i]) return
+			if (!uniformState.lights || !uniformState.lights[i]) return
 			else {
 				if (prop === 'positionEC' && uniformState.lights[i].position) {
 					let t = new Cartesian4()
