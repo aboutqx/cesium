@@ -14,8 +14,8 @@
     <script type="text/javascript" src="../Sandcastle-header.js"></script>
     <script
       type="text/javascript"
-      src="../../../Build/CesiumUnminified/Cesium.js"
-      nomodule
+      src="../../../Build/Cesium/Cesium.js"
+
     ></script>
     <script type="module" src="../load-cesium-es6.js"></script>
 </head>
@@ -73,10 +73,10 @@
                 shouldAnimate: true,
             });
             var scene = viewer.scene
-            const baseUrl = '../../SampleData/Cesium3DTiles/Tilesets/Private'
+            const baseUrl = '../../SampleData/Cesium3DTiles/Tilesets/Private/'
 
             const addTile = (path, color = 'rgba(7000,7000,7000,7000)', zoomTo = false) => {
-                path = baseUrl+'/dahua/'  +path
+                path = baseUrl  +path
                 const tileset = new Cesium.Cesium3DTileset({ url: path });
                 tileset.style = new Cesium.Cesium3DTileStyle({
                     color
@@ -87,23 +87,26 @@
                 return tileset
             }
 
-            const tileset = addTile('DX/tileset.json', 'rgba(700,700,700,700)')
+            // const tileset = addTile('DX/tileset.json', 'rgba(700,700,700,700)')
 
-            addTile('SWJZ/tileset.json')
-            
-            for(let i = 1; i < 7; i++){
-                addTile(`JZ/${i}/F1/tileset.json`)
+            // addTile('SWJZ/tileset.json')
+            addTile(`JZ/1/F1/tileset.json`, '', true)
+            for(let i = 1; i < 5; i++){
+                for(let j =2; j < 27; j++) {
+                    addTile(`JZ/${i}/F${j}/tileset.json`)
+                }
+                
             }
 
-            addTile(`XP/XP/tileset.json`)
-            addTile(`XP/qiche/tileset.json`)
-            addTile(`XP/shiwaitingchewei/tileset.json`)
-            addTile(`XP/shiwaiyouchetingchewei/tileset.json`)
+            // addTile(`XP/XP/tileset.json`)
+            // addTile(`XP/qiche/tileset.json`)
+            // addTile(`XP/shiwaitingchewei/tileset.json`)
+            // addTile(`XP/shiwaiyouchetingchewei/tileset.json`)
             
-            addTile(`LK/suoyou/tileset.json`,'rgba(10,770,770,7)', true)
-            addTile(`LK/jianzhu/tileset.json`,'rgba(7000,1000,70000,1000)', true)
-            addTile(`LK/luya/tileset.json`,'rgba(7000,1000,7000,7000)')
-            addTile(`LK/pudi/tileset.json`,'rgba(7000,1000,7000,7000)')
+            // addTile(`LK/suoyou/tileset.json`,'rgba(10,770,770,7)', true)
+            // addTile(`LK/jianzhu/tileset.json`,'rgba(7000,1000,70000,1000)', true)
+            // addTile(`LK/luya/tileset.json`,'rgba(7000,1000,7000,7000)')
+            // addTile(`LK/pudi/tileset.json`,'rgba(7000,1000,7000,7000)')
             
 
             var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706, 0);

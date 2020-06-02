@@ -29,5 +29,6 @@
     "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
     "javascript.format.placeOpenBraceOnNewLineForFunctions": false,
     "javascript.format.placeOpenBraceOnNewLineForControlBlocks": false,
-    "glTF.defaultV2Engine": "Cesium"
+    "glTF.defaultV2Engine": "Cesium",
+    "python.pythonPath": "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe"
 }

@@ -32,7 +32,7 @@ import PixelDatatype from '../Renderer/PixelDatatype.js';
 /**
  * Contains functions for creating common post-process stages.
  *
- * @exports PostProcessStageLibrary
+ * @namespace PostProcessStageLibrary
  */
 var PostProcessStageLibrary = {};
 
