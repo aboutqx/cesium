@@ -83,24 +83,24 @@
         {
           type: 0, //directional
           direction: new Cesium.Cartesian3(0, 1, 0),
-          color: new Cesium.Color(.1, .1, .1)
+          color: new Cesium.Color(0, 0, 0)
         },
         {
           type: 1, //point
           position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
-          color: new Cesium.Color(3, 13, 3),
+          color: new Cesium.Color(.3, 1.3, .3),
           constant: 1,
           linear: .09,
           quadratic: .032
         },
-        {
-          type: 1, //pointl
-          position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
-          color: new Cesium.Color(10.3, 3, 6),
-          constant: 1,
-          linear: .09,
-          quadratic: .032
-        }
+        // {
+        //   type: 1, //pointl
+        //   position: new Cesium.Cartesian3(-1739076.5314795692, 5202317.7139456635, 3243654.20298938),
+        //   color: new Cesium.Color(10.3, 3, 6),
+        //   constant: 1,
+        //   linear: .09,
+        //   quadratic: .032
+        // }
       ]
 
 
@@ -110,7 +110,7 @@
         if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity) {
           var cartesian = viewer.scene.pickPositionWorldCoordinates(movement.position);
           console.log(cartesian.x, ',', cartesian.y, ',', cartesian.z)
-          scene.lights[2].position = cartesian
+          scene.lights[1].position = cartesian
         }
 
 

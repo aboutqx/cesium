@@ -1049,6 +1049,24 @@ function getDefaultShader(source, applyHighlight) {
     );
   }
 
+  let lightsFrag
+  if(source.indexOf('v_pos')!= -1)
+    lightsFrag = `        
+      vec3 finalColor = vec3(0., 0., 0.);
+      for(int i=0; i<10; i++ ) {
+          if(czm_lights[i].type == 1) {
+              vec3 pos = czm_lights[i].positionEC;
+              float distance = length( pos - v_pos) ;
+              float attenuation = 1.0 / (czm_lights[i].constant + czm_lights[i].linear * distance + czm_lights[i].quadratic * distance * distance);
+              finalColor += czm_lights[i].color * attenuation;
+          } else if(czm_lights[i].type == 0){
+              finalColor += czm_lights[i].color;
+          }
+      }
+      if(!(finalColor.r == 0. &&finalColor.g == 0. && finalColor.b == 0.))
+      gl_FragColor.rgb += finalColor;
+    `
+  else lightsFrag = ''
   // The color blend mode is intended for the RGB channels so alpha is always just multiplied.
   // gl_FragColor is multiplied by the tile color only when tile_colorBlend is 0.0 (highlight)
   return (
@@ -1062,19 +1080,7 @@ function getDefaultShader(source, applyHighlight) {
         float highlight = ceil(tile_colorBlend);
         gl_FragColor.rgb *= mix(tile_featureColor.rgb, vec3(1.0), highlight);
 
-        vec3 finalColor;
-        for(int i=0; i<10; i++ ) {
-            if(czm_lights[i].type == 1) {
-                vec3 pos = czm_lights[i].positionEC;
-                float distance = length( pos - v_pos) ;
-                float attenuation = 1.0 / (czm_lights[i].constant + czm_lights[i].linear * distance + czm_lights[i].quadratic * distance * distance);
-                finalColor += czm_lights[i].color * attenuation;
-            } else if(czm_lights[i].type == 0){
-                finalColor += czm_lights[i].color;
-            }
-        }
-
-        gl_FragColor.rgb *= finalColor;
+        ${lightsFrag}
 
     }
     `
