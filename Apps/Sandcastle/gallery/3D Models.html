@@ -104,7 +104,7 @@
       ]
 
 
-      let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+      const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
       handler.setInputAction(function(movement) {
         var pickedObject = scene.pick(movement.position);
         if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity) {

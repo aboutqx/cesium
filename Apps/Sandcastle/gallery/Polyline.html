@@ -1,141 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
-    <meta
-      name="description"
-      content="Draw polylines with various widths and materials."
-    />
-    <meta name="cesium-sandcastle-labels" content="Geometries" />
-    <title>Cesium Demo</title>
-    <script type="text/javascript" src="../Sandcastle-header.js"></script>
-    <script
-      type="text/javascript"
-      src="../../../Build/CesiumUnminified/Cesium.js"
-      nomodule
-    ></script>
-    <script type="module" src="../load-cesium-es6.js"></script>
-  </head>
-  <body
-    class="sandcastle-loading"
-    data-sandcastle-bucket="bucket-requirejs.html"
-  >
-    <style>
-      @import url(../templates/bucket.css);
-    </style>
-    <div id="cesiumContainer" class="fullSize"></div>
-    <div id="loadingOverlay"><h1>Loading...</h1></div>
-    <div id="toolbar"></div>
-    <script id="cesium_sandcastle_script">
-      function startup(Cesium) {
-        "use strict";
-        //Sandcastle_Begin
-        var viewer = new Cesium.Viewer("cesiumContainer");
 
-        var redLine = viewer.entities.add({
-          name: "Red line on terrain",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
-            width: 5,
-            material: Cesium.Color.RED,
-            clampToGround: true,
-          },
-        });
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <meta name="description" content="Draw polylines with various widths and materials." />
+  <meta name="cesium-sandcastle-labels" content="Geometries" />
+  <title>Cesium Demo</title>
+  <script type="text/javascript" src="../Sandcastle-header.js"></script>
+  <script type="text/javascript" src="../../../Build/CesiumUnminified/Cesium.js" nomodule></script>
+  <script type="module" src="../load-cesium-es6.js"></script>
+</head>
 
-        var greenRhumbLine = viewer.entities.add({
-          name: "Green rhumb line",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
-            width: 5,
-            arcType: Cesium.ArcType.RHUMB,
-            material: Cesium.Color.GREEN,
-          },
-        });
+<body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+  <style>
+    @import url(../templates/bucket.css);
+  </style>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <div id="loadingOverlay">
+    <h1>Loading...</h1>
+  </div>
+  <div id="toolbar"></div>
+  <script id="cesium_sandcastle_script">
+    function startup(Cesium) {
+      "use strict";
+      //Sandcastle_Begin
+      const viewer = new Cesium.Viewer("cesiumContainer");
+      const scene = viewer.scene
+      const row = () => 'vec2(.1, st.s * max(time, .0001))'
+      const col = () => 'vec2(.1, st.t * max(time, .0001))'
+      // const rowMat = new Cesium.Material({
+      //   fabric: {
+      //     uniforms: {
+      //       image: '../images/road.jpg',
+      //       color: new Cesium.Color(.6, .6, .6, 1.),
+      //       time: 0
+      //     },
+      //     source: `czm_material czm_getMaterial(czm_materialInput materialInput)
 
-        var glowingLine = viewer.entities.add({
-          name: "Glowing blue line on the surface",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArray([-75, 37, -125, 37]),
-            width: 10,
-            material: new Cesium.PolylineGlowMaterialProperty({
-              glowPower: 0.2,
-              taperPower: 0.5,
-              color: Cesium.Color.CORNFLOWERBLUE,
-            }),
-          },
-        });
+      //       {
+      //           czm_material material = czm_getDefaultMaterial(materialInput);
+      //           vec2 st = materialInput.st;
+      //           vec4 colorImage =texture2D(image, ${row()});
+      //           material.alpha = colorImage.a * color.a;
+      //           material.diffuse = (colorImage.rgb+color.rgb)/2.0;
+      //           return material;
+      //       }`
+      //   }
+      // })
+      // const colMat = new Cesium.Material({
+      //   fabric: {
+      //     uniforms: {
+      //       image: '../images/road.jpg',
+      //       color: new Cesium.Color(.6, .6, .6, 1.),
+      //       time: 0
+      //     },
+      //     source: `czm_material czm_getMaterial(czm_materialInput materialInput)
 
-        var orangeOutlined = viewer.entities.add({
-          name:
-            "Orange line with black outline at height and following the surface",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              -75,
-              39,
-              250000,
-              -125,
-              39,
-              250000,
-            ]),
-            width: 5,
-            material: new Cesium.PolylineOutlineMaterialProperty({
-              color: Cesium.Color.ORANGE,
-              outlineWidth: 2,
-              outlineColor: Cesium.Color.BLACK,
-            }),
-          },
-        });
+      //       {
+      //           czm_material material = czm_getDefaultMaterial(materialInput);
+      //           vec2 st = materialInput.st;
+      //           vec4 colorImage =texture2D(image, ${col()});
+      //           material.alpha = colorImage.a * color.a;
+      //           material.diffuse = (colorImage.rgb+color.rgb)/2.0;
+      //           return material;
+      //       }`
+      //   }
+      // })
 
-        var purpleArrow = viewer.entities.add({
-          name: "Purple straight arrow at height",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              -75,
-              43,
-              500000,
-              -125,
-              43,
-              500000,
-            ]),
-            width: 10,
-            arcType: Cesium.ArcType.NONE,
-            material: new Cesium.PolylineArrowMaterialProperty(
-              Cesium.Color.PURPLE
-            ),
-          },
-        });
-
-        var dashedLine = viewer.entities.add({
-          name: "Blue dashed line",
-          polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              -75,
-              45,
-              500000,
-              -125,
-              45,
-              500000,
-            ]),
-            width: 4,
-            material: new Cesium.PolylineDashMaterialProperty({
-              color: Cesium.Color.CYAN,
-            }),
-          },
-        });
-
-        viewer.zoomTo(viewer.entities);
-        //Sandcastle_End
-        Sandcastle.finishedLoading();
+      const DEF_OPT = {
+        color: Cesium.Color.BLACK,
+        duration: 3000,
+        count: 2.0,
+        freely: 'vertical',
+        direction: '-'
       }
-      if (typeof Cesium !== "undefined") {
-        window.startupCalled = true;
-        startup(Cesium);
+      const PolylineTrailLinkMaterialProperty = class {
+
+        constructor(options) {
+          options = Object.assign(DEF_OPT, options)
+          this._definitionChanged = new Cesium.Event();
+          this._color = undefined;
+          this._colorSubscription = undefined;
+          this.color = options.color;
+          this.duration = options.duration;
+          this._time = new Date().getTime();
+          this.freely = options.mat
+
+          this.create(options)
+        }
+
+        get isConstant() {
+          return false
+        }
+
+        get definitionChanged() {
+          return this._definitionChanged
+        }
+
+        getType(time) {
+          return "PolylineTrailLink";
+        }
+
+        getValue(time, result) {
+          if (!Cesium.defined(result)) {
+            result = {};
+          }
+          result.color = Cesium.Property.getValueOrClonedDefault(
+            this._color,
+            time,
+            Cesium.Color.WHITE,
+            result.color
+          );
+          result.image = Cesium.Material.PolylineTrailLinkImage;
+          result.time =
+            ((new Date().getTime() - this._time) % this.duration) / this.duration;
+          return result;
+        };
+
+        equals(other) {
+          return (
+            this === other ||
+            (other instanceof PolylineTrailLinkMaterialProperty &&
+              Cesium.Property.equals(this._color, other._color))
+          );
+        }
+
+        getMaterail(options) {
+          const t =this.freely == 'col' ? col() : row()
+          return `czm_material czm_getMaterial(czm_materialInput materialInput)
+
+            {
+                czm_material material = czm_getDefaultMaterial(materialInput);
+                vec2 st = materialInput.st;
+                vec4 colorImage =texture2D(image, ${t});
+                material.alpha = colorImage.a * color.a;
+                material.diffuse = (colorImage.rgb+color.rgb)/2.0;
+                return material;
+            }`
+        }
+
+        create(options) {
+          Cesium.Material.PolylineTrailLinkType = "PolylineTrailLink";
+          Cesium.Material.PolylineTrailLinkImage = options.image || "../images/road.jpg"; //图片
+          Cesium.Material.PolylineTrailLinkSource = this.getMaterail(options)
+
+          Cesium.Material._materialCache.addMaterial(
+            Cesium.Material.PolylineTrailLinkType,
+            {
+              fabric: {
+                type: Cesium.Material.PolylineTrailLinkType,
+                uniforms: {
+                  color: new Cesium.Color(.6, .6, .6, 1.),
+                  image: Cesium.Material.PolylineTrailLinkImage,
+                  time: 0
+                },
+                source: Cesium.Material.PolylineTrailLinkSource
+              },
+              translucent: function(material) {
+                return true;
+              }
+            }
+          );
+        }
       }
-    </script>
-  </body>
+
+      Object.defineProperties(PolylineTrailLinkMaterialProperty.prototype, {
+        color: Cesium.createPropertyDescriptor("color")
+      });
+      const rectFunc = (pos, mat, rotate) => {
+        // const polygon = new Cesium.RectangleGeometry({
+        //   rectangle: Cesium.Rectangle.fromCartesianArray(pos),
+        //   vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+        //   height: .5
+        // })
+        // const t = scene.primitives.add(new Cesium.Primitive({
+        //   geometryInstances: new Cesium.GeometryInstance({
+        //     geometry: polygon
+        //   }),
+        //   appearance: new Cesium.EllipsoidSurfaceAppearance({
+        //     aboveGround: false
+        //   })
+        // }))
+        // t.appearance.material = mat == 'row' ? rowMat : colMat
+        const t = viewer.entities.add({
+
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromCartesianArray(pos),
+            material: new PolylineTrailLinkMaterialProperty({mat}),//mat == 'row' ? rowMat : colMat
+            rotation: new Cesium.CallbackProperty(() => rotate, false),
+          },
+        });
+        return t
+      }
+      const rect = rectFunc([
+        new Cesium.Cartesian3(-2772756.054050288, 4770819.2142183725, 3187983.803871008),
+        new Cesium.Cartesian3(-2773303.8612774387, 4770492.714526595, 3187995.79062404)
+      ], 'row',0.03) //down row
+      const rect1 = rectFunc([
+        new Cesium.Cartesian3(-2773188.614119751, 4770647.0183205595, 3187866.0180691984),
+        new Cesium.Cartesian3(-2773040.1811360773, 4770433.07668932, 3188312.2438014434)
+      ], 'col', 0)
+      const rect2 = rectFunc([
+        new Cesium.Cartesian3(-2772908.3711867793, 4770768.503194168, 3187927.577833754),
+        new Cesium.Cartesian3(-2772796.0109458677, 4770598.334812973, 3188279.1569793774)
+      ], 'col', 0)
+      const rect3 = rectFunc([
+        new Cesium.Cartesian3(-2772754.910382209, 4770608.576901221, 3188298.2612136756),
+        new Cesium.Cartesian3(-2773082.0917415572, 4770428.905841316, 3188282.6306300117)
+      ], 'row',.2) //top row
+
+      const positionEllipsoid = new Cesium.Cartesian3(-2772754.910382209, 4770608.576901221, 3188298.2612136756)
+
+
+      // rect3.orientation = orientation
+      // var counter = 90;
+      // var length = 400000.0;
+      // setInterval(function() {
+
+      //   if (counter >= 360) {
+      //     counter = 0;
+      //   }
+      //   var angleRad = 3.14 * counter / 180;
+      //   var rotMatrix = new Cesium.Matrix3.fromRotationZ(angleRad);
+      //   var modelMatrix = Cesium.Matrix4.multiply(
+      //     Cesium.Transforms.eastNorthUpToFixedFrame(positionEllipsoid),
+      //     Cesium.Matrix4.fromRotationTranslation(rotMatrix, new Cesium.Cartesian3(0.0, 0.0, 0 * 0.5)),
+      //     new Cesium.Matrix4());
+      //   rect3.modelMatrix = modelMatrix;
+
+
+      //   counter += 5;
+
+      // }, 100);
+
+      const polylines = new Cesium.PolylineCollection();
+      viewer.scene.primitives.add(polylines);
+      const glowingLine = polylines.add({
+        show: false,
+        positions: [
+          new Cesium.Cartesian3(-2773109.823281288, 5770519.932673026, 3188123.128756979),
+          new Cesium.Cartesian3(-2773274.6713126427, 4770716.720428133, 3187688.463723878)
+        ],
+        width: 15,
+        material: Cesium.Material.fromType(Cesium.Material.PolylineGlowType, {
+          glowPower: 2.,
+          taperPower: 1.5,
+          color: Cesium.Color.ORANGERED.withAlpha(0.9),
+        }),
+      });
+      const positions = glowingLine.positions
+      const startPos = positions[0]
+      const targetPos = positions[positions.length - 1]
+      const time = 3
+      const startTime = performance.now()
+
+      function loop() {
+
+        const curTime = performance.now()
+        const pastTime = (curTime - startTime) / 1000
+        const pastPercent = pastTime % time / time
+
+        // if ((time - pastTime % time) <= 0.1) return
+
+
+        const curPos = new Cesium.Cartesian3()
+        const lastPos = new Cesium.Cartesian3()
+        const key = ['x', 'y', 'z']
+        key.forEach(i => {
+          curPos[i] = (targetPos[i] - startPos[i]) * pastPercent + startPos[i]
+          lastPos[i] = curPos[i] - (targetPos[i] - startPos[i]) * (1 / 16 / 3) * 3
+        })
+        glowingLine.positions = [lastPos, curPos]
+
+        // rect.appearance.material.uniforms.time = pastPercent
+        // rect1.appearance.material.uniforms.time = pastPercent
+        // rect2.appearance.material.uniforms.time = pastPercent
+        // rect3.appearance.material.uniforms.time = pastPercent
+      }
+
+
+
+      var clock = viewer.clock;
+      var lastUpdated = clock.currentTime;
+      clock.onTick.addEventListener(function() {
+        var dt = Cesium.JulianDate.secondsDifference(clock.currentTime, lastUpdated);
+        if (dt < .001) {
+          loop()
+        }
+      });
+
+      const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+      handler.setInputAction(function(movement) {
+        const pickedObject = scene.pick(movement.position);
+        if (scene.pickPositionSupported && Cesium.defined(pickedObject) && pickedObject.id === viewer.trackedEntity) {
+          const us = scene.context.uniformState;
+          const cartesian = viewer.scene.pickPositionWorldCoordinates(movement.position);
+          console.log(`${cartesian.x}, ${cartesian.y}, ${cartesian.z}`)
+
+        }
+
+
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+      const baseUrl = '../../SampleData/Cesium3DTiles/Tilesets/Private/dahua_/'
+      const addTile = (path, lightColor = '', zoomTo = false) => {
+        path = baseUrl + path
+        const tileset = new Cesium.Cesium3DTileset({ url: path });
+        tileset.style = new Cesium.Cesium3DTileStyle({
+          lightColor
+        });
+        viewer.scene.primitives.add(tileset)
+
+        if (zoomTo) viewer.zoomTo(tileset)
+
+        return tileset
+      }
+
+      var position = Cesium.Cartesian3.fromDegrees(
+        120.16903505, 30.18544386,
+        1000
+      );
+      var heading = Cesium.Math.toRadians(19);
+      var pitch = Cesium.Math.toRadians(15);
+      var roll = 20;
+      var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      var orientation = Cesium.Transforms.headingPitchRollQuaternion(
+        position,
+        hpr
+      );
+      scene.camera.setView({
+        destination: position,
+        orientation,
+        endTransform: Cesium.Matrix4.IDENTITY,
+      });
+
+
+      addTile('DX/DX2/tileset.json')
+      addTile('DXS/tileset.json')
+
+
+
+      for (let j = 1; j < 27; j++) {
+        addTile(`JZ/1/F${j}/tileset.json`)
+        addTile(`JZ/1/F${j}D/tileset.json`)
+      }
+      for (let i = 1; i <= 5; i++) {
+        addTile(`JZ/${i}/F1/tileset.json`)
+
+      }
+      viewer.trackedEntity = addTile(`JZ/1/F1/tileset.json`)
+      const tileset = addTile('DX/DX1/tileset.json')
+      addTile('SWJZ/tileset.json');
+      ['滨康路', '滨安路', '诚业路', '信诚路'].forEach(v => addTile(`${v}/tileset.json`, 'rgba(0., 0., 0., 0.5)'))
+
+      scene.lights = [
+        {
+          type: 0, //directional
+          direction: new Cesium.Cartesian3(0, 1, 0),
+          color: new Cesium.Color(69 / 2555, 158 / 2555, 255 / 2555)
+        },
+        {
+          type: 1, //point
+          position: new Cesium.Cartesian3(-2773039.647179016, 4770546.340944642, 3188290.2750869347),
+          color: new Cesium.Color(255 / 255, 240 / 255, 252 / 255),
+          constant: 2.4,
+          linear: .2,
+          quadratic: .032
+        },
+        {
+          type: 1, //pointl
+          position: new Cesium.Cartesian3(-2773014.086697187, 4770492.559173876, 3188256.4854016015),
+          color: new Cesium.Color(87 / 255, 240 / 255, 252 / 255), //light blue
+          constant: 1,
+          linear: .09,
+          quadratic: .032
+        },
+        {
+          type: 1, //pointl
+          position: new Cesium.Cartesian3(-2772934.3962332658, 4770566.0076727, 3188292.555011289),
+          color: new Cesium.Color(2 / 255, 2 / 255, 2 / 255),
+          constant: 2,
+          linear: .09,
+          quadratic: .032
+        },
+        {
+          type: 1, //pointl
+          position: new Cesium.Cartesian3(-2772989.117733204, 4770591.067222686, 3188200.528215804),
+          color: new Cesium.Color(87 / 255, 240 / 255, 252 / 255), //light blue
+          constant: 1,
+          linear: .09,
+          quadratic: .032
+        },
+        {
+          type: 1, //pointl
+          position: new Cesium.Cartesian3(-2772860.550004979, 4770612.925629232, 3188208.7962346524),
+          color: new Cesium.Color(87 / 255, 240 / 255, 252 / 255), //light blue
+          constant: 1.5,
+          linear: .1,
+          quadratic: .022
+        },
+
+      ]
+      window.scene = scene
+      window.Cesium = Cesium
+      //Sandcastle_End
+      Sandcastle.finishedLoading();
+    }
+    if (typeof Cesium !== "undefined") {
+      window.startupCalled = true;
+      startup(Cesium);
+    }
+  </script>
+</body>
+
 </html>
