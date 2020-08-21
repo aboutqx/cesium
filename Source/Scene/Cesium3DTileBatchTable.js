@@ -1063,8 +1063,10 @@ function getDefaultShader(source, applyHighlight) {
               finalColor += czm_lights[i].color;
           }
       }
-      if(!(finalColor.r == 0. &&finalColor.g == 0. && finalColor.b == 0.))
-      gl_FragColor.rgb += finalColor;
+      if(!(finalColor.r == 0. &&finalColor.g == 0. && finalColor.b == 0.)) {
+        gl_FragColor.rgb += finalColor;
+      }
+      
     `
   else lightsFrag = ''
   // The color blend mode is intended for the RGB channels so alpha is always just multiplied.

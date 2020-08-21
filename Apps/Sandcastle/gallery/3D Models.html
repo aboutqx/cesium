@@ -102,7 +102,10 @@
         //   quadratic: .032
         // }
       ]
-
+      setTimeout(() => {
+        scene.lights = []
+        debugger
+      }, 3000)
 
       const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
       handler.setInputAction(function(movement) {

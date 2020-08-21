@@ -1653,7 +1653,14 @@ var AutomaticUniforms = {
 		quadratic: 'float'
 	},
 	getValue: function(uniformState, i, prop) {
-		if (!uniformState.lights || !uniformState.lights[i]) return
+		if (!uniformState.lights || !uniformState.lights[i]) {
+      if(prop === 'color') {
+        return new Cesium.Color(0, 0, 0)
+      } else {
+        return
+      }
+
+    }
 		else {
 			if (prop === 'positionEC' && uniformState.lights[i].position) {
 				let t = new Cartesian4()
@@ -1668,6 +1675,7 @@ var AutomaticUniforms = {
 				uniformState.lights[i].directionEC = Matrix3.multiplyByVector(uniformState.viewRotation3D, uniformState.lights[i].directionWC, uniformState.lights[i].directionEC);
 				return uniformState.lights[i].directionEC
 			} else {
+        console.log(uniformState.lights[i][prop])
 				return uniformState.lights[i][prop];
 			}
 		}
