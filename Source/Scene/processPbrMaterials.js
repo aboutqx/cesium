@@ -90,25 +90,29 @@ function addTextureCoordinates(
     defaultTexCoord,
     result
 ) {
-    var texCoord;
-    if (defined(generatedMaterialValues[textureName + "Offset"])) {
-        texCoord = textureName + "Coord";
-        result.fragmentShaderMain +=
-            "    vec2 " +
-            texCoord +
-            " = computeTexCoord(" +
-            defaultTexCoord +
-            ", " +
-            textureName +
-            "Offset, " +
-            textureName +
-            "Rotation, " +
-            textureName +
-            "Scale);\n";
-    } else {
-        texCoord = defaultTexCoord;
-    }
-    return texCoord;
+  var texCoord;
+  var texInfo = generatedMaterialValues[textureName];
+  if (defined(texInfo) && defined(texInfo.texCoord) && texInfo.texCoord === 1) {
+    defaultTexCoord = defaultTexCoord.replace("0", "1");
+  }
+  if (defined(generatedMaterialValues[textureName + "Offset"])) {
+    texCoord = textureName + "Coord";
+    result.fragmentShaderMain +=
+      "    vec2 " +
+      texCoord +
+      " = computeTexCoord(" +
+      defaultTexCoord +
+      ", " +
+      textureName +
+      "Offset, " +
+      textureName +
+      "Rotation, " +
+      textureName +
+      "Scale);\n";
+  } else {
+    texCoord = defaultTexCoord;
+  }
+  return texCoord;
 }
 
 var DEFAULT_TEXTURE_OFFSET = [0.0, 0.0];
@@ -127,6 +131,85 @@ function handleKHRTextureTransform(
     ) {
         return;
     }
+  }
+
+  var vertexShader = "precision highp float;\n";
+  var fragmentShader = "precision highp float;\n";
+
+  var skin;
+  if (defined(gltf.skins)) {
+    skin = gltf.skins[0];
+  }
+  var joints = defined(skin) ? skin.joints : [];
+  var jointCount = joints.length;
+
+  var primitiveInfo = primitiveByMaterial[materialIndex];
+
+  var skinningInfo;
+  var hasSkinning = false;
+  var hasVertexColors = false;
+  var hasMorphTargets = false;
+  var hasNormals = false;
+  var hasTangents = false;
+  var hasTexCoords = false;
+  var hasTexCoord1 = false;
+  var hasOutline = false;
+  var isUnlit = false;
+
+  if (defined(primitiveInfo)) {
+    skinningInfo = primitiveInfo.skinning;
+    hasSkinning = skinningInfo.skinned && joints.length > 0;
+    hasVertexColors = primitiveInfo.hasVertexColors;
+    hasMorphTargets = primitiveInfo.hasMorphTargets;
+    hasNormals = primitiveInfo.hasNormals;
+    hasTangents = primitiveInfo.hasTangents;
+    hasTexCoords = primitiveInfo.hasTexCoords;
+    hasTexCoord1 = primitiveInfo.hasTexCoord1;
+    hasOutline = primitiveInfo.hasOutline;
+  }
+
+  var morphTargets;
+  if (hasMorphTargets) {
+    ForEach.mesh(gltf, function (mesh) {
+      ForEach.meshPrimitive(mesh, function (primitive) {
+        if (primitive.material === materialIndex) {
+          var targets = primitive.targets;
+          if (defined(targets)) {
+            morphTargets = targets;
+          }
+        }
+      });
+    });
+  }
+
+  // Add techniques
+  var techniqueUniforms = {
+    // Add matrices
+    u_modelViewMatrix: {
+      semantic: hasExtension(gltf, "CESIUM_RTC")
+        ? "CESIUM_RTC_MODELVIEW"
+        : "MODELVIEW",
+      type: WebGLConstants.FLOAT_MAT4,
+    },
+    u_projectionMatrix: {
+      semantic: "PROJECTION",
+      type: WebGLConstants.FLOAT_MAT4,
+    },
+  };
+
+  if (
+    defined(material.extensions) &&
+    defined(material.extensions.KHR_materials_unlit)
+  ) {
+    isUnlit = true;
+  }
+
+  if (hasNormals) {
+    techniqueUniforms.u_normalMatrix = {
+      semantic: "MODELVIEWINVERSETRANSPOSE",
+      type: WebGLConstants.FLOAT_MAT3,
+    };
+  }
 
     var uniformName = "u_" + parameterName;
     var extension = value.extensions.KHR_texture_transform;
@@ -215,53 +298,43 @@ function generateTechnique(
             handleKHRTextureTransform(additional, value, generatedMaterialValues);
         }
     }
+  }
 
-    var vertexShader = "precision highp float;\n";
-    var fragmentShader = "precision highp float;\n";
+  // Final position computation
+  if (hasSkinning) {
+    vertexShaderMain +=
+      "    vec4 position = skinMatrix * vec4(weightedPosition, 1.0);\n";
+  } else {
+    vertexShaderMain += "    vec4 position = vec4(weightedPosition, 1.0);\n";
+  }
+  vertexShaderMain += "    position = u_modelViewMatrix * position;\n";
+  if (hasNormals) {
+    vertexShaderMain += "    v_positionEC = position.xyz;\n";
+  }
+  vertexShaderMain += "    gl_Position = u_projectionMatrix * position;\n";
 
-    var skin;
-    if (defined(gltf.skins)) {
-        skin = gltf.skins[0];
+  if (hasOutline) {
+    vertexShaderMain += "    v_outlineCoordinates = a_outlineCoordinates;\n";
+  }
+
+  // Final normal computation
+  if (hasNormals) {
+    techniqueAttributes.a_normal = {
+      semantic: "NORMAL",
+    };
+    vertexShader += "attribute vec3 a_normal;\n";
+    if (!isUnlit) {
+      vertexShader += "varying vec3 v_normal;\n";
+      if (hasSkinning) {
+        vertexShaderMain +=
+          "    v_normal = u_normalMatrix * mat3(skinMatrix) * weightedNormal;\n";
+      } else {
+        vertexShaderMain += "    v_normal = u_normalMatrix * weightedNormal;\n";
+      }
+      fragmentShader += "varying vec3 v_normal;\n";
     }
-    var joints = defined(skin) ? skin.joints : [];
-    var jointCount = joints.length;
-
-    var primitiveInfo = primitiveByMaterial[materialIndex];
-
-    var skinningInfo;
-    var hasSkinning = false;
-    var hasVertexColors = false;
-    var hasMorphTargets = false;
-    var hasNormals = false;
-    var hasTangents = false;
-    var hasTexCoords = false;
-    var hasOutline = false;
-    var isUnlit = false;
-
-    if (defined(primitiveInfo)) {
-        skinningInfo = primitiveInfo.skinning;
-        hasSkinning = skinningInfo.skinned && joints.length > 0;
-        hasVertexColors = primitiveInfo.hasVertexColors;
-        hasMorphTargets = primitiveInfo.hasMorphTargets;
-        hasNormals = primitiveInfo.hasNormals;
-        hasTangents = primitiveInfo.hasTangents;
-        hasTexCoords = primitiveInfo.hasTexCoords;
-        hasOutline = primitiveInfo.hasOutline;
-    }
-
-    var morphTargets;
-    if (hasMorphTargets) {
-        ForEach.mesh(gltf, function(mesh) {
-            ForEach.meshPrimitive(mesh, function(primitive) {
-                if (primitive.material === materialIndex) {
-                    var targets = primitive.targets;
-                    if (defined(targets)) {
-                        morphTargets = targets;
-                    }
-                }
-            });
-        });
-    }
+    fragmentShader += "varying vec3 v_positionEC;\n";
+  }
 
     // Add techniques
     var techniqueUniforms = {
@@ -294,13 +367,71 @@ function generateTechnique(
         };
     }
 
-    if (hasSkinning) {
-        techniqueUniforms.u_jointMatrix = {
-            count: jointCount,
-            semantic: "JOINTMATRIX",
-            type: WebGLConstants.FLOAT_MAT4,
-        };
+    if (hasTexCoord1) {
+      techniqueAttributes.a_texcoord_1 = {
+        semantic: "TEXCOORD_1",
+      };
+
+      var v_texCoord1 = v_texCoord.replace("0", "1");
+      vertexShader += "attribute vec2 a_texcoord_1;\n";
+      vertexShader += "varying vec2 " + v_texCoord1 + ";\n";
+      vertexShaderMain += "    " + v_texCoord1 + " = a_texcoord_1;\n";
+
+      fragmentShader += "varying vec2 " + v_texCoord1 + ";\n";
     }
+
+    var result = {
+      fragmentShaderMain: fragmentShaderMain,
+    };
+    normalTexCoord = addTextureCoordinates(
+      gltf,
+      "u_normalTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    baseColorTexCoord = addTextureCoordinates(
+      gltf,
+      "u_baseColorTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    specularGlossinessTexCoord = addTextureCoordinates(
+      gltf,
+      "u_specularGlossinessTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    diffuseTexCoord = addTextureCoordinates(
+      gltf,
+      "u_diffuseTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    metallicRoughnessTexCoord = addTextureCoordinates(
+      gltf,
+      "u_metallicRoughnessTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    occlusionTexCoord = addTextureCoordinates(
+      gltf,
+      "u_occlusionTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
+    emissiveTexCoord = addTextureCoordinates(
+      gltf,
+      "u_emissiveTexture",
+      generatedMaterialValues,
+      v_texCoord,
+      result
+    );
 
     if (hasMorphTargets) {
         techniqueUniforms.u_morphWeights = {
@@ -369,6 +500,9 @@ function generateTechnique(
     if (hasOutline) {
         fragmentShader += "uniform sampler2D u_outlineTexture;\n";
     }
+  // Fragment shader lighting
+  if (hasNormals && !isUnlit) {
+    fragmentShader += "const float M_PI = 3.141592653589793;\n";
 
     // Add attributes with semantics
     var vertexShaderMain = "";
@@ -451,10 +585,116 @@ function generateTechnique(
         }
     }
 
-    // Final position computation
-    if (hasSkinning) {
-        vertexShaderMain +=
-            "    vec4 position = skinMatrix * vec4(weightedPosition, 1.0);\n";
+    fragmentShader +=
+      "float GGX(float roughness, float NdotH) \n" +
+      "{\n" +
+      "    float roughnessSquared = roughness * roughness;\n" +
+      "    float f = (NdotH * roughnessSquared - NdotH) * NdotH + 1.0;\n" +
+      "    return roughnessSquared / (M_PI * f * f);\n" +
+      "}\n\n";
+  }
+
+  fragmentShader +=
+    "vec3 SRGBtoLINEAR3(vec3 srgbIn) \n" +
+    "{\n" +
+    "    return pow(srgbIn, vec3(2.2));\n" +
+    "}\n\n";
+
+  fragmentShader +=
+    "vec4 SRGBtoLINEAR4(vec4 srgbIn) \n" +
+    "{\n" +
+    "    vec3 linearOut = pow(srgbIn.rgb, vec3(2.2));\n" +
+    "    return vec4(linearOut, srgbIn.a);\n" +
+    "}\n\n";
+
+  fragmentShader +=
+    "vec3 applyTonemapping(vec3 linearIn) \n" +
+    "{\n" +
+    "#ifndef HDR \n" +
+    "    return czm_acesTonemapping(linearIn);\n" +
+    "#else \n" +
+    "    return linearIn;\n" +
+    "#endif \n" +
+    "}\n\n";
+
+  fragmentShader +=
+    "vec3 LINEARtoSRGB(vec3 linearIn) \n" +
+    "{\n" +
+    "#ifndef HDR \n" +
+    "    return pow(linearIn, vec3(1.0/2.2));\n" +
+    "#else \n" +
+    "    return linearIn;\n" +
+    "#endif \n" +
+    "}\n\n";
+
+  fragmentShader +=
+    "vec2 computeTexCoord(vec2 texCoords, vec2 offset, float rotation, vec2 scale) \n" +
+    "{\n" +
+    "    rotation = -rotation; \n" +
+    "    mat3 transform = mat3(\n" +
+    "        cos(rotation) * scale.x, sin(rotation) * scale.x, 0.0, \n" +
+    "       -sin(rotation) * scale.y, cos(rotation) * scale.y, 0.0, \n" +
+    "        offset.x, offset.y, 1.0); \n" +
+    "    vec2 transformedTexCoords = (transform * vec3(fract(texCoords), 1.0)).xy; \n" +
+    "    return transformedTexCoords; \n" +
+    "}\n\n";
+
+  fragmentShader += "#ifdef USE_IBL_LIGHTING \n";
+  fragmentShader += "uniform vec2 gltf_iblFactor; \n";
+  fragmentShader += "#endif \n";
+  fragmentShader += "#ifdef USE_CUSTOM_LIGHT_COLOR \n";
+  fragmentShader += "uniform vec3 gltf_lightColor; \n";
+  fragmentShader += "#endif \n";
+
+  fragmentShader += "void main(void) \n{\n";
+  fragmentShader += fragmentShaderMain;
+
+  // Add normal mapping to fragment shader
+  if (hasNormals && !isUnlit) {
+    fragmentShader += "    vec3 ng = normalize(v_normal);\n";
+    fragmentShader +=
+      "    vec3 positionWC = vec3(czm_inverseView * vec4(v_positionEC, 1.0));\n";
+    if (defined(generatedMaterialValues.u_normalTexture)) {
+      if (hasTangents) {
+        // Read tangents from varying
+        fragmentShader += "    vec3 t = normalize(v_tangent.xyz);\n";
+        fragmentShader +=
+          "    vec3 b = normalize(cross(ng, t) * v_tangent.w);\n";
+        fragmentShader += "    mat3 tbn = mat3(t, b, ng);\n";
+        fragmentShader +=
+          "    vec3 n = texture2D(u_normalTexture, " +
+          normalTexCoord +
+          ").rgb;\n";
+        fragmentShader += "    n = normalize(tbn * (2.0 * n - 1.0));\n";
+      } else {
+        // Add standard derivatives extension
+        fragmentShader =
+          "#ifdef GL_OES_standard_derivatives\n" +
+          "#extension GL_OES_standard_derivatives : enable\n" +
+          "#endif\n" +
+          fragmentShader;
+        // Compute tangents
+        fragmentShader += "#ifdef GL_OES_standard_derivatives\n";
+        fragmentShader += "    vec3 pos_dx = dFdx(v_positionEC);\n";
+        fragmentShader += "    vec3 pos_dy = dFdy(v_positionEC);\n";
+        fragmentShader +=
+          "    vec3 tex_dx = dFdx(vec3(" + normalTexCoord + ",0.0));\n";
+        fragmentShader +=
+          "    vec3 tex_dy = dFdy(vec3(" + normalTexCoord + ",0.0));\n";
+        fragmentShader +=
+          "    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n";
+        fragmentShader += "    t = normalize(t - ng * dot(ng, t));\n";
+        fragmentShader += "    vec3 b = normalize(cross(ng, t));\n";
+        fragmentShader += "    mat3 tbn = mat3(t, b, ng);\n";
+        fragmentShader +=
+          "    vec3 n = texture2D(u_normalTexture, " +
+          normalTexCoord +
+          ").rgb;\n";
+        fragmentShader += "    n = normalize(tbn * (2.0 * n - 1.0));\n";
+        fragmentShader += "#else\n";
+        fragmentShader += "    vec3 n = ng;\n";
+        fragmentShader += "#endif\n";
+      }
     } else {
         vertexShaderMain += "    vec4 position = vec4(weightedPosition, 1.0);\n";
     }
@@ -468,16 +708,31 @@ function generateTechnique(
         vertexShaderMain += "    v_outlineCoordinates = a_outlineCoordinates;\n";
     }
 
-    // Final normal computation
-    if (hasNormals) {
-        techniqueAttributes.a_normal = {
-            semantic: "NORMAL",
-        };
-        vertexShader += "attribute vec3 a_normal;\n";
-        vertexShader += "varying vec3 v_normal;\n";
-        if (hasSkinning) {
-            vertexShaderMain +=
-                "    v_normal = u_normalMatrix * mat3(skinMatrix) * weightedNormal;\n";
+  if (hasNormals && !isUnlit) {
+    if (useSpecGloss) {
+      if (defined(generatedMaterialValues.u_specularGlossinessTexture)) {
+        fragmentShader +=
+          "    vec4 specularGlossiness = SRGBtoLINEAR4(texture2D(u_specularGlossinessTexture, " +
+          specularGlossinessTexCoord +
+          "));\n";
+        fragmentShader += "    vec3 specular = specularGlossiness.rgb;\n";
+        fragmentShader += "    float glossiness = specularGlossiness.a;\n";
+        if (defined(generatedMaterialValues.u_specularFactor)) {
+          fragmentShader += "    specular *= u_specularFactor;\n";
+        }
+        if (defined(generatedMaterialValues.u_glossinessFactor)) {
+          fragmentShader += "    glossiness *= u_glossinessFactor;\n";
+        }
+      } else {
+        if (defined(generatedMaterialValues.u_specularFactor)) {
+          fragmentShader +=
+            "    vec3 specular = clamp(u_specularFactor, vec3(0.0), vec3(1.0));\n";
+        } else {
+          fragmentShader += "    vec3 specular = vec3(1.0);\n";
+        }
+        if (defined(generatedMaterialValues.u_glossinessFactor)) {
+          fragmentShader +=
+            "    float glossiness = clamp(u_glossinessFactor, 0.0, 1.0);\n";
         } else {
             vertexShaderMain += "    v_normal = u_normalMatrix * weightedNormal;\n";
         }
@@ -653,20 +908,12 @@ function generateTechnique(
             "    return smithVisibilityG1(NdotL, roughness) * smithVisibilityG1(NdotV, roughness);\n" +
             "}\n\n";
 
-        fragmentShader +=
-            "float GGX(float roughness, float NdotH) \n" +
-            "{\n" +
-            "    float roughnessSquared = roughness * roughness;\n" +
-            "    float f = (NdotH * roughnessSquared - NdotH) * NdotH + 1.0;\n" +
-            "    return roughnessSquared / (M_PI * f * f);\n" +
-            "}\n\n";
-    }
-
+    // Environment maps were provided, use them for IBL
+    fragmentShader += "#elif defined(DIFFUSE_IBL) || defined(SPECULAR_IBL) \n";
     fragmentShader +=
-        "vec3 SRGBtoLINEAR3(vec3 srgbIn) \n" +
-        "{\n" +
-        "    return pow(srgbIn, vec3(2.2));\n" +
-        "}\n\n";
+      "    const mat3 yUpToZUp = mat3(-1.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0); \n";
+    fragmentShader +=
+      "    vec3 cubeDir = normalize(yUpToZUp * gltf_iblReferenceFrameMatrix * normalize(reflect(-v, n))); \n";
 
     fragmentShader +=
         "vec4 SRGBtoLINEAR4(vec4 srgbIn) \n" +
